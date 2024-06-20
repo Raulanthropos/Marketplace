@@ -93,6 +93,12 @@ const Register = () => {
         setIsLoggedIn(true);
         setSnackbarOpen(true); // Show success notification
         navigate("/"); // Redirect to the main screen
+
+        // Store the access token in localStorage
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({ accessToken: data.accessToken })
+        );
       })
       .catch((error) => {
         console.error(

@@ -10,7 +10,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Register from "../Register/Register";
 import useAuthStore from "../../store/auth";
 
 export default function TemporaryDrawer() {

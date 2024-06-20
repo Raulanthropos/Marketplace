@@ -54,23 +54,21 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "space-between",
   alignItems: "center",
-  maxWidth: '100%',
-  wordWrap: 'break-word',
+  maxWidth: "100%",
+  wordWrap: "break-word",
 }));
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
-
 }));
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  width: '250px',
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  width: "250px",
 }));
-
 
 const LinkItem = styled(Link)(({ theme }) => ({
   color: theme.palette.secondary,
@@ -87,10 +85,24 @@ const ModalContent = styled(Modal)(({ theme }) => ({
   alignItems: "center",
 }));
 
+const ModalReviews = styled(Modal)(({ theme }) => ({
+  backgroundColor: theme.palette.background,
+  border: "2px solid #000",
+  padding: theme.spacing(2, 4, 3),
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+}));
+
 const Main = () => {
   const [productsData, setProductsData] = useState();
   const [productData, setProductData] = useState({});
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [reviewsData, setReviewsData] = useState({});
+  const [open, setOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  const [rate, setRate] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:3001/products")
@@ -122,6 +134,43 @@ const Main = () => {
     return data;
   };
 
+  const postReview = async (product) => {
+    // Retrieve the token from localStorage
+    const storedAuth = localStorage.getItem("auth");
+    const auth = storedAuth ? JSON.parse(storedAuth) : null;
+    const token = auth ? auth.accessToken : null;
+
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    const response = await fetch(
+      `http://localhost:3001/products/${product._id}/reviews`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the Bearer token here
+        },
+        body: JSON.stringify({
+          comment,
+          rate,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    console.log("Data review", data);
+    setOpen(false);
+    return data;
+  };
+
+  const openReviewModal = (product) => {
+    setProductData(product);
+    setOpen(true);
+  };
+
   return (
     <>
       <Title>Main Content</Title>
@@ -143,6 +192,9 @@ const Main = () => {
                   </TypographyItem>
                   <Button onClick={() => fetchProduct(product)}>
                     View Details
+                  </Button>
+                  <Button onClick={() => openReviewModal(product)}>
+                    Leave a review!
                   </Button>
                 </CardContentItem>
                 <CardContentItem>
@@ -183,6 +235,37 @@ const Main = () => {
           </CardContentItem>
         </CardItem>
       </ModalContent>
+      <ModalReviews open={open} onClose={() => setOpen(false)}>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <TypographyItem variant="h5">Leave a review</TypographyItem>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="0/200"
+            maxLength="200"
+            rows="5"
+            required
+          />
+          <div>
+            {[...Array(5)].map((_, i) => (
+              <label key={i}>
+                <input
+                  type="radio"
+                  name="rate"
+                  value={i + 1}
+                  checked={rate === i + 1}
+                  onChange={(e) => setRate(i + 1)}
+                  required
+                />
+                ★
+              </label>
+            ))}
+          </div>
+          <Button type="submit" onClick={() => postReview(productData)}>
+            Submit
+          </Button>
+        </form>
+      </ModalReviews>
     </>
   );
 };
