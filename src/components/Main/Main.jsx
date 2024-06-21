@@ -99,7 +99,7 @@ const Main = () => {
   const [productsData, setProductsData] = useState();
   const [productData, setProductData] = useState({});
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [reviewsData, setReviewsData] = useState({});
+  const [reviewDataWithUserNames, setReviewDataWithUserNames] = useState([]);
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(null);
@@ -120,6 +120,7 @@ const Main = () => {
     );
     const data = await response.json();
     fetchComments(product);
+    fetchReviewData(product);
     setProductData(data);
     setButtonClicked(true);
     return data;
@@ -137,33 +138,93 @@ const Main = () => {
   const postReview = async (product) => {
     // Retrieve the token from localStorage
     const storedAuth = localStorage.getItem("auth");
-    const auth = storedAuth ? JSON.parse(storedAuth) : null;
-    const token = auth ? auth.accessToken : null;
+    const token = storedAuth ? JSON.parse(storedAuth).accessToken : null;
 
     if (!token) {
       console.error("No token found");
       return;
     }
 
-    const response = await fetch(
-      `http://localhost:3001/products/${product._id}/reviews`,
-      {
-        method: "POST",
+    try {
+      const response = await fetch(
+        `http://localhost:3001/products/${product._id}/reviews`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Attach token with Bearer prefix
+          },
+          body: JSON.stringify({
+            comment,
+            rate,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Data review", data);
+      setOpen(false);
+      return data;
+    } catch (error) {
+      console.error("Error posting review:", error);
+      // Handle error as needed
+    }
+  };
+
+  // Define a function to fetch user name synchronously
+  const fetchUserNameSync = async (userId) => {
+    try {
+      const storedAuth = localStorage.getItem("auth");
+      const auth = storedAuth ? JSON.parse(storedAuth) : null;
+      const token = auth ? auth.accessToken : null;
+
+      if (!token) {
+        console.error("No token found");
+        return null;
+      }
+
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // Add the Bearer token here
         },
-        body: JSON.stringify({
-          comment,
-          rate,
-        }),
-      }
-    );
+      });
 
-    const data = await response.json();
-    console.log("Data review", data);
-    setOpen(false);
-    return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const userData = await response.json();
+      console.log("userData", userData);
+
+      if (userData && userData.name) {
+        return userData.name;
+      } else {
+        console.error("Unexpected response format:", userData);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  };
+
+  const fetchReviewData = async () => {
+    const updatedReviews = [];
+    for (const review of productData?.reviews ?? []) {
+      const userName = await fetchUserNameSync(review.userId);
+      console.log("Review", review)
+      if (userName) {
+        updatedReviews.push(`${userName}: ${review.rate}, ${review.comment}`);
+      }
+    }
+    console.log("Updated reviews", updatedReviews);
+    setReviewDataWithUserNames(updatedReviews[0]);
   };
 
   const openReviewModal = (product) => {
@@ -178,7 +239,7 @@ const Main = () => {
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
           {productsData?.map((product) => (
-            <Grid item xs={8} sm={6} md={4} lg={3} key={product.id}>
+            <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
               <CardItem>
                 <CardMediaItem
                   component="img"
@@ -228,9 +289,9 @@ const Main = () => {
           </CardContentItem>
           <CardContentItem>
             <TypographyItem variant="body2" color="textSecondary">
-              {productData?.reviews?.map(
-                (review) => `${review.rate}, ${review.comment}`
-              )}
+              {productData?.reviews?.map((review) => {
+                return `${review.name}: ${review.rate}, ${review.comment}`;
+              })}
             </TypographyItem>
           </CardContentItem>
         </CardItem>
