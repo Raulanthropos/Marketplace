@@ -57,9 +57,4 @@ const useCartStore = create(
   )
 );
 
-// const useCartStore = create((set) => ({
-//     cart: [],
-//     setCart: (value) => set({ cart: value }),
-//   }));
-
 export default useCartStore;

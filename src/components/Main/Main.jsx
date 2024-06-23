@@ -2,10 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import { styled } from "@mui/system";
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
 import { Modal } from "@mui/material";
 import { Link } from "react-router-dom";
 import useCartStore from "../../store/Cart";
+import useAuthStore from "../../store/auth";
+import createTheme from "../../theme";
 
 // Define styled components
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -33,11 +41,12 @@ const CardContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const CardItem = styled(Card)(({ theme }) => ({
-  maxWidth: 345,
-  height: 375,
+  maxWidth: 600,
+  width: "100%",
+  height: "100%",
   margin: theme.spacing(1),
-  backgroundColor: theme.palette.secondary,
-  color: theme.palette.primary,
+  backgroundColor: createTheme.palette.secondary,
+  color: createTheme.palette.primary,
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -48,6 +57,20 @@ const CardItem = styled(Card)(({ theme }) => ({
 
 const CardMediaItem = styled(CardMedia)(({ theme }) => ({
   height: 140,
+}));
+
+const FormItem = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%', // Ensure the form fills the width of its parent (ModalContent)
+  maxWidth: 600, // Example maximum width for responsiveness
+  margin: theme.spacing(1),
+  backgroundColor: createTheme.palette.secondary,
+  color: createTheme.palette.primary,
+  overflow: 'hidden',
+  flexShrink: 1,
 }));
 
 const CardContentItem = styled(CardContent)(({ theme }) => ({
@@ -77,64 +100,70 @@ const LinkItem = styled(Link)(({ theme }) => ({
 }));
 
 const ModalContent = styled(Modal)(({ theme }) => ({
-  backgroundColor: theme.palette.background,
-  border: "2px solid #000",
-  padding: theme.spacing(2, 4, 3),
+  backgroundColor: createTheme.palette.background,
+  padding: theme.spacing(4),
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  width: "80%",
+  maxWidth: 400,
+  maxHeight: 500,
+  margin: "auto",
 }));
 
 const ModalReviews = styled(Modal)(({ theme }) => ({
-  backgroundColor: theme.palette.background,
+  backgroundColor: "white",
+  padding: theme.spacing(4),
   border: "2px solid #000",
-  padding: theme.spacing(2, 4, 3),
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  width: "80%",
+  maxWidth: 400,
+  maxHeight: 500,
+  margin: "auto",
+}));
+
+const ButtonItem = styled(Button)(() => ({
+  marginTop: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketdarkblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketdarkblue,
+    backgroundColor: createTheme.palette.common.marketwhite,
+  },
 }));
 
 const Main = () => {
+  const { isLoggedIn } = useAuthStore();
   const [productsData, setProductsData] = useState();
   const [productData, setProductData] = useState({});
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [reviewDataWithUserNames, setReviewDataWithUserNames] = useState([]);
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(null);
-  const cart = useCartStore((state) => state.cart);
-  const setCart = useCartStore((state) => state.setCart);
+  const { cart, addToCart, increaseQuantity, decreaseQuantity } = useCartStore(
+    (state) => ({
+      cart: state.cart,
+      addToCart: state.addToCart,
+      increaseQuantity: state.increaseQuantity,
+      decreaseQuantity: state.decreaseQuantity,
+    })
+  );
   const baseUrl = process.env.REACT_APP_API_URL;
-  const [quantity, setQuantity] = useState(0);
-  const increaseQuantity = useCartStore((state) => state.increaseQuantity);
-  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
-  console.log("Cart", cart);
-  const addToCart = useCartStore((state) => state.addToCart);
 
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
-
-  // const increaseQuantity = (product) => {
-  //   setQuantity(quantity + 1);
-  // };
-
-  // const decreaseQuantity = (product) => {
-  //   if (quantity >= 0) {
-  //     setQuantity(quantity - 1);
-  //   }
-  // };
+  // console.log("Cart", cart);
 
   useEffect(() => {
-    fetch(`${baseUrl}/products`)
-      .then((response) => {
-        response.json().then((data) => {
-          setProductsData(data.products);
-        });
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchProducts = async () => {
+      const response = await fetch(`${baseUrl}/products`);
+      const data = await response.json();
+      setProductsData(data.products);
+    };
+
+    fetchProducts();
     //eslint-disable-next-line
   }, []);
 
@@ -142,7 +171,6 @@ const Main = () => {
     const response = await fetch(`${baseUrl}/products/${product._id}`);
     const data = await response.json();
     fetchComments(product);
-    fetchReviewData(product);
     setProductData(data);
     setButtonClicked(true);
     return data;
@@ -156,7 +184,6 @@ const Main = () => {
   };
 
   const postReview = async (product) => {
-    // Retrieve the token from localStorage
     const storedAuth = localStorage.getItem("auth");
     const token = storedAuth ? JSON.parse(storedAuth).accessToken : null;
 
@@ -195,58 +222,6 @@ const Main = () => {
     }
   };
 
-  // Define a function to fetch user name synchronously
-  const fetchUserNameSync = async (userId) => {
-    try {
-      const storedAuth = localStorage.getItem("auth");
-      const auth = storedAuth ? JSON.parse(storedAuth) : null;
-      const token = auth ? auth.accessToken : null;
-
-      if (!token) {
-        console.error("No token found");
-        return null;
-      }
-
-      const response = await fetch(`${baseUrl}/users/${userId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add the Bearer token here
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const userData = await response.json();
-      console.log("userData", userData);
-
-      if (userData && userData.name) {
-        return userData.name;
-      } else {
-        console.error("Unexpected response format:", userData);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      return null;
-    }
-  };
-
-  const fetchReviewData = async () => {
-    const updatedReviews = [];
-    for (const review of productData?.reviews ?? []) {
-      const userName = await fetchUserNameSync(review.userId);
-      console.log("Review", review);
-      if (userName) {
-        updatedReviews.push(`${userName}: ${review.rate}, ${review.comment}`);
-      }
-    }
-    console.log("Updated reviews", updatedReviews);
-    setReviewDataWithUserNames(updatedReviews[0]);
-  };
-
   const openReviewModal = (product) => {
     setProductData(product);
     setOpen(true);
@@ -258,61 +233,83 @@ const Main = () => {
       <Subtitle>Subtitle</Subtitle>
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
-          {productsData?.map((product) => (
-            <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
-              <CardItem>
-                <CardMediaItem
-                  component="img"
-                  alt={product.name}
-                  image={product.imageUrl}
-                />
-                <CardContentItem>
-                  <TypographyTitle variant="h5">{product.name}</TypographyTitle>
-                  <TypographyItem variant="body2" color="textSecondary">
-                    {product.description}
-                  </TypographyItem>
-                  <Button onClick={() => fetchProduct(product)}>
-                    View Details
-                  </Button>
-                  <Button onClick={() => openReviewModal(product)}>
-                    Leave a review!
-                  </Button>
-                  {product.quantity === 0 || undefined ? (
-                    <Button onClick={() => handleAddToCart(product)}>
-                      Add to Cart
-                    </Button>
-                  ) : (
-                    <>
-                      <Grid
-                        container
-                        direction="row"
-                        justifyContent="space-around"
-                        alignItems="center"
-                        spacing={2}
-                        mt={1}
-                      >
-                        <Button
-                          onClick={() => increaseQuantity(product)}
-                          variant="contained"
-                        >
-                          +
-                        </Button>
-                        <TypographyItem variant="h5">{product.quantity}</TypographyItem>
-                        <Button
-                          onClick={() => decreaseQuantity(product)}
-                          variant="contained"
-                        >
-                          -
-                        </Button>
-                      </Grid>
-                    </>
-                  )}
+          {productsData?.map((product) => {
+            const cartItem = cart.find((item) => item._id === product._id);
+            const quantity = cartItem ? cartItem.quantity : 0;
 
-                  <TypographyItem variant="h5">{product.price}</TypographyItem>
-                </CardContentItem>
-              </CardItem>
-            </Grid>
-          ))}
+            return (
+              <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
+                <CardItem>
+                  <CardMediaItem
+                    component="img"
+                    alt={product.name}
+                    image={product.imageUrl}
+                  />
+                  <CardContentItem>
+                    <TypographyTitle variant="h5">
+                      {product.name}
+                    </TypographyTitle>
+                    <TypographyItem variant="body2" color="textSecondary">
+                      {product.description}
+                    </TypographyItem>
+                    <ButtonItem onClick={() => fetchProduct(product)}>
+                      View Details
+                    </ButtonItem>
+                    {isLoggedIn ? (
+                      <Button onClick={() => openReviewModal(product)}>
+                        Leave a review!
+                      </Button>
+                    ) : (
+                      <TypographyItem variant="body2">
+                        Sign in to leave a review
+                      </TypographyItem>
+                    )}
+                    <CardActions>
+                      {isLoggedIn ? (
+                        quantity > 0 ? (
+                          <>
+                            <Button
+                              size="small"
+                              color="primary"
+                              variant="contained"
+                              onClick={() => decreaseQuantity(product)}
+                            >
+                              -
+                            </Button>
+                            <Typography variant="h6">{quantity}</Typography>
+                            <Button
+                              size="small"
+                              color="primary"
+                              variant="contained"
+                              onClick={() => increaseQuantity(product)}
+                            >
+                              +
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="small"
+                            color="primary"
+                            onClick={() => addToCart(product)}
+                          >
+                            Add to Cart
+                          </Button>
+                        )
+                      ) : (
+                        <TypographyItem variant="body2">
+                          Sign in to add to cart
+                        </TypographyItem>
+                      )}
+                    </CardActions>
+
+                    <TypographyItem variant="h5">
+                      {product.price}$
+                    </TypographyItem>
+                  </CardContentItem>
+                </CardItem>
+              </Grid>
+            );
+          })}
         </CardContainer>
       </MainContainer>
       <ModalContent
@@ -334,27 +331,42 @@ const Main = () => {
             </TypographyItem>
           </CardContentItem>
           <CardContentItem>
-            <TypographyItem variant="h5">{productData.price}</TypographyItem>
+            <TypographyItem variant="h5">{productData.price}$</TypographyItem>
           </CardContentItem>
           <CardContentItem>
-            <TypographyItem variant="body2" color="textSecondary">
-              {productData?.reviews?.map((review) => {
-                return `${review.name}: ${review.rate}, ${review.comment}`;
-              })}
-            </TypographyItem>
+            {productData?.reviews?.map((review) => {
+              const formattedDate = new Date(review.createdAt).toLocaleString(
+                "en-UK"
+              );
+              return (
+                <div key={review._id}>
+                  <TypographyItem variant="h6" color="textSecondary">
+                    Posted By: Anonymous
+                    <br />
+                    Date Posted: {formattedDate}
+                    <br />
+                    Rate: {review.rate}
+                    <br />
+                    Comment: {review.comment}
+                  </TypographyItem>
+                </div>
+              );
+            })}
           </CardContentItem>
         </CardItem>
       </ModalContent>
       <ModalReviews open={open} onClose={() => setOpen(false)}>
-        <form onSubmit={(e) => e.preventDefault()}>
+        <FormItem>
+        <form onSubmit={(e) => e.preventDefault()} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
           <TypographyItem variant="h5">Leave a review</TypographyItem>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="0/200"
             maxLength="200"
-            rows="5"
+            rows="10"
             required
+            style={{ width: "100%", height: "100%", marginBottom: "10px" }}
           />
           <div>
             {[...Array(5)].map((_, i) => (
@@ -375,6 +387,7 @@ const Main = () => {
             Submit
           </Button>
         </form>
+        </FormItem>
       </ModalReviews>
     </>
   );

@@ -39,22 +39,45 @@ const ListItem = styled(Link)(({ theme }) => ({
 }));
 
 function Footer() {
+
   return (
     <FooterContainer>
       <ContentWrapper container justify="center">
         <ColumnHalf item xs={6}>
           <Title>Footer Content</Title>
-          <p>
-            You can use rows and columns here to organize your footer content.
-          </p>
+          <p>This mock eshop was created by Ioannis Psichias.</p>
         </ColumnHalf>
         <ColumnHalf item xs={6}>
           <Title>Links</Title>
           <List>
-            <ListItem to="#">Link 1</ListItem>
-            <ListItem to="#">Link 2</ListItem>
-            <ListItem to="#">Link 3</ListItem>
-            <ListItem to="#">Link 4</ListItem>
+            {/* Link 1: Send Email */}
+            <ListItem>
+              <a
+                href={`mailto:${process.env.REACT_APP_EMAIL}`}
+              >
+                Link 1
+              </a>
+            </ListItem>
+            {/* Link 2: LinkedIn */}
+            <ListItem>
+              <a
+                href="https://www.linkedin.com/in/ioannis-psychias"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
+            </ListItem>
+            {/* Link 3: GitHub */}
+            <ListItem>
+              <a
+                href="https://github.com/raulanthropos"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+            </ListItem>
           </List>
         </ColumnHalf>
       </ContentWrapper>

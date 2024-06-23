@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
@@ -12,29 +12,31 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useAuthStore from "../../store/auth";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
-import { createTheme } from "@mui/material";
+import createTheme from "../../theme";
 
 const DRAWER_WIDTH = 250; // Default drawer width
 const MOBILE_DRAWER_WIDTH = 150; // Mobile drawer width
 
 const MainContainer = styled(Grid)(
-  ({ theme, isDrawerOpenNormal, isDrawerOpenMobile }) => ({
-    backgroundColor: "lightgray",
-    color: theme.palette.secondary,
+  ({ isDrawerOpenNormal, isDrawerOpenMobile }) => ({
+    backgroundColor: createTheme.palette.common.marketlightgrey,
+    color: createTheme.palette.secondary,
     padding: "1rem",
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
     marginLeft: isDrawerOpenNormal ? `${DRAWER_WIDTH}px` : "0",
-    [theme.breakpoints.down("xs")]: {
+    [createTheme.breakpoints.down("xs")]: {
       marginLeft: isDrawerOpenMobile ? `${MOBILE_DRAWER_WIDTH}px` : "0",
     },
   })
 );
+
+const TypographyItem = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(1),
+}));
 
 const LinkItem = styled(ListItemText)(({ theme }) => ({
   color: "red",
@@ -61,7 +63,7 @@ export default function TemporaryDrawer() {
   const { isLoggedIn } = useAuthStore();
   const { setIsLoggedIn } = useAuthStore.getState();
   const baseUrl = process.env.REACT_APP_API_URL;
-
+  const userName = JSON.parse(localStorage.getItem("user"))?.name;
   const screenWidth = window.innerWidth || document.documentElement.clientWidth;
   const drawerWidth = screenWidth <= 600 ? MOBILE_DRAWER_WIDTH : DRAWER_WIDTH;
   const dynamicWidth = isDrawerOpen ? `calc(100% - ${drawerWidth}px` : "100%";
@@ -73,7 +75,6 @@ export default function TemporaryDrawer() {
     ) {
       return;
     }
-    toast("Hello, world! This is a toast message.");
     setIsDrawerOpen(open);
   };
 
@@ -88,15 +89,9 @@ export default function TemporaryDrawer() {
         setIsLoggedIn(false);
         window.location.href = "/";
       } else {
-        toast.error(` Error logging out - ${response.status}`, {
-          position: "top-left",
-        });
         console.error("Logout failed:", response.status);
       }
     } catch (error) {
-      toast.info(`Network error:, ${error}`, {
-        position: "bottom-center",
-      });
       console.error("Network error:", error);
     }
   };
@@ -111,6 +106,9 @@ export default function TemporaryDrawer() {
         <Divider />
         {isLoggedIn ? (
           <List>
+            <ListItem key={userName} disablePadding>
+          <TypographyItem variant="h6">Welcome back, {userName}!</TypographyItem>
+            </ListItem>
             <ListItem key="Main" disablePadding>
               <ListItemButton>
                 <Link to="/">
@@ -130,17 +128,9 @@ export default function TemporaryDrawer() {
                 <ListItemText primary="Logout" />
               </ListItemButton>
             </ListItem>
-            <ToastContainer position="top-right" autoClose={1000} />
           </List>
         ) : (
           <List>
-            {/* {["Home", "About", "Contact"].map((text, index) => (
-        <ListItem key={text} disablePadding>
-          <ListItemButton>
-            <ListItemText primary={text} />
-          </ListItemButton>
-        </ListItem>
-      ))} */}
             <ListItem key="Register" disablePadding>
               <ListItemButton>
                 <Link to="/register">
@@ -158,17 +148,6 @@ export default function TemporaryDrawer() {
           </List>
         )}
       </DrawerContainerStyle>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </>
   );
 

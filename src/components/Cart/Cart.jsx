@@ -83,47 +83,51 @@ const Cart = () => {
       <Title>Cart</Title>
       <Subtitle>Items in your cart:</Subtitle>
       <CardContainer>
-        {cart.map((product) => (
-          <Card
-            key={product._id}
-            sx={{
-              width: 300,
-              height: 300,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <CardContentItem>
-              <CardMedia
-                component="img"
-                height="200"
-                image={product.imageUrl}
-                alt={product.title}
-              />
-              <TypographyTitle variant="h5" component="div">
-                {product.title}
-              </TypographyTitle>
-              <TypographyItem variant="body2" color="text.secondary">
-                {product.category}
-              </TypographyItem>
-              <TypographyItem variant="body2" color="text.secondary">
-                Price: ${product.price * product.quantity}
-              </TypographyItem>
-              <TypographyItem variant="body2" color="text.secondary">
-                Quantity: {product.quantity}
-              </TypographyItem>
-            </CardContentItem>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => navigate(`/products/${product.id}`)}
+        {cart.map((product) => {
+          const cartItem = cart.find((item) => item._id);
+          const quantity = cartItem ? cartItem.quantity : 0;
+          return (
+            <Card
+              key={product._id}
+              sx={{
+                width: 300,
+                height: 300,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
             >
-              View Product
-            </Button>
-          </Card>
-        ))}
+              <CardContentItem>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={product.imageUrl}
+                  alt={product.title}
+                />
+                <TypographyTitle variant="h5" component="div">
+                  {product.title}
+                </TypographyTitle>
+                <TypographyItem variant="body2" color="text.secondary">
+                  {product.category}
+                </TypographyItem>
+                <TypographyItem variant="body2" color="text.secondary">
+                  Price: ${product.price * quantity}
+                </TypographyItem>
+                <TypographyItem variant="body2" color="text.secondary">
+                  Quantity: {product.quantity}
+                </TypographyItem>
+              </CardContentItem>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => navigate(`/products/${product.id}`)}
+              >
+                View Product
+              </Button>
+            </Card>
+          );
+        })}
       </CardContainer>
     </MainContainer>
   );

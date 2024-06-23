@@ -85,6 +85,7 @@ const Login = () => {
           "auth",
           JSON.stringify({ accessToken: data.accessToken })
         );
+        localStorage.setItem("user", JSON.stringify(data.user));
       })
       .catch((error) => {
         console.error(
