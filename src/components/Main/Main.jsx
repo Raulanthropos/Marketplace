@@ -5,6 +5,7 @@ import { styled } from "@mui/system";
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { Modal } from "@mui/material";
 import { Link } from "react-router-dom";
+import useCartStore from "../../store/Cart";
 
 // Define styled components
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -33,7 +34,7 @@ const CardContainer = styled(Grid)(({ theme }) => ({
 
 const CardItem = styled(Card)(({ theme }) => ({
   maxWidth: 345,
-  height: 350,
+  height: 375,
   margin: theme.spacing(1),
   backgroundColor: theme.palette.secondary,
   color: theme.palette.primary,
@@ -103,21 +104,42 @@ const Main = () => {
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(null);
+  const cart = useCartStore((state) => state.cart);
+  const setCart = useCartStore((state) => state.setCart);
+  const baseUrl = process.env.REACT_APP_API_URL;
+  const [quantity, setQuantity] = useState(0);
+  const increaseQuantity = useCartStore((state) => state.increaseQuantity);
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+  console.log("Cart", cart);
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
+
+  // const increaseQuantity = (product) => {
+  //   setQuantity(quantity + 1);
+  // };
+
+  // const decreaseQuantity = (product) => {
+  //   if (quantity >= 0) {
+  //     setQuantity(quantity - 1);
+  //   }
+  // };
 
   useEffect(() => {
-    fetch("http://localhost:3001/products")
+    fetch(`${baseUrl}/products`)
       .then((response) => {
         response.json().then((data) => {
           setProductsData(data.products);
         });
       })
       .catch((error) => console.error("Error fetching data:", error));
+    //eslint-disable-next-line
   }, []);
 
   const fetchProduct = async (product) => {
-    const response = await fetch(
-      `http://localhost:3001/products/${product._id}`
-    );
+    const response = await fetch(`${baseUrl}/products/${product._id}`);
     const data = await response.json();
     fetchComments(product);
     fetchReviewData(product);
@@ -127,9 +149,7 @@ const Main = () => {
   };
 
   const fetchComments = async (product) => {
-    const response = await fetch(
-      `http://localhost:3001/products/${product._id}/reviews`
-    );
+    const response = await fetch(`${baseUrl}/products/${product._id}/reviews`);
     const data = await response.json();
     setButtonClicked(true);
     return data;
@@ -147,7 +167,7 @@ const Main = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/products/${product._id}/reviews`,
+        `${baseUrl}/products/${product._id}/reviews`,
         {
           method: "POST",
           headers: {
@@ -187,7 +207,7 @@ const Main = () => {
         return null;
       }
 
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+      const response = await fetch(`${baseUrl}/users/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -218,7 +238,7 @@ const Main = () => {
     const updatedReviews = [];
     for (const review of productData?.reviews ?? []) {
       const userName = await fetchUserNameSync(review.userId);
-      console.log("Review", review)
+      console.log("Review", review);
       if (userName) {
         updatedReviews.push(`${userName}: ${review.rate}, ${review.comment}`);
       }
@@ -257,8 +277,37 @@ const Main = () => {
                   <Button onClick={() => openReviewModal(product)}>
                     Leave a review!
                   </Button>
-                </CardContentItem>
-                <CardContentItem>
+                  {product.quantity === 0 || undefined ? (
+                    <Button onClick={() => handleAddToCart(product)}>
+                      Add to Cart
+                    </Button>
+                  ) : (
+                    <>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-around"
+                        alignItems="center"
+                        spacing={2}
+                        mt={1}
+                      >
+                        <Button
+                          onClick={() => increaseQuantity(product)}
+                          variant="contained"
+                        >
+                          +
+                        </Button>
+                        <TypographyItem variant="h5">{product.quantity}</TypographyItem>
+                        <Button
+                          onClick={() => decreaseQuantity(product)}
+                          variant="contained"
+                        >
+                          -
+                        </Button>
+                      </Grid>
+                    </>
+                  )}
+
                   <TypographyItem variant="h5">{product.price}</TypographyItem>
                 </CardContentItem>
               </CardItem>

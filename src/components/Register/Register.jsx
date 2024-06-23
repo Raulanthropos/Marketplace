@@ -66,12 +66,12 @@ const Register = () => {
   const [loading, setLoading] = useState(false); // Add a loading state
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Add a state for Snackbar visibility
   const { setIsLoggedIn } = useAuthStore.getState();
-
+  const baseUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate(); // Instantiate navigate function to redirect user
 
   const handleRegister = () => {
     setLoading(true); // Start loading
-    fetch("http://localhost:3001/users/register", {
+    fetch(`${baseUrl}/users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

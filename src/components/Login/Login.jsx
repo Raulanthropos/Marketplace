@@ -23,14 +23,6 @@ const MainContainer = styled("main")(({ theme }) => ({
   alignItems: "center",
 }));
 
-const Title = styled("h1")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
-
-const Subtitle = styled("h2")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
-
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
@@ -47,10 +39,6 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
   wordWrap: "break-word",
 }));
 
-const TypographyItem = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
-
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   whiteSpace: "nowrap",
@@ -59,18 +47,18 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
   width: "250px",
 }));
 
-const Register = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { setIsLoggedIn } = useAuthStore.getState();
-
+  const baseUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    setLoading(true); // Start loading
-    fetch("http://localhost:3001/users/login", {
+    setLoading(true);
+    fetch(`${baseUrl}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,12 +77,10 @@ const Register = () => {
       })
       .then((data) => {
         console.log(data);
-        setLoading(false); // Stop loading
+        setLoading(false);
         setIsLoggedIn(true);
-        setSnackbarOpen(true); // Show success notification
-        navigate("/"); // Redirect to the main screen
-
-        // Store the access token in localStorage
+        setSnackbarOpen(true);
+        navigate("/");
         localStorage.setItem(
           "auth",
           JSON.stringify({ accessToken: data.accessToken })
@@ -105,7 +91,7 @@ const Register = () => {
           "There has been a problem with your fetch operation:",
           error
         );
-        setLoading(false); // Stop loading in case of error
+        setLoading(false);
       });
   };
 
@@ -145,7 +131,6 @@ const Register = () => {
               onChange={(event) => setPassword(event.target.value)}
             />
           </CardContentItem>
-          {/* ... (The rest of the JSX remains the same) */}
           <Button
             variant="contained"
             color="primary"
@@ -166,4 +151,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
