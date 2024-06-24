@@ -84,8 +84,6 @@ const Cart = () => {
       <Subtitle>Items in your cart:</Subtitle>
       <CardContainer>
         {cart.map((product) => {
-          const cartItem = cart.find((item) => item._id);
-          const quantity = cartItem ? cartItem.quantity : 0;
           return (
             <Card
               key={product._id}
