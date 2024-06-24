@@ -112,7 +112,7 @@ const Cart = () => {
                   {product.category}
                 </TypographyItem>
                 <TypographyItem variant="body2" color="text.secondary">
-                  Price: ${product.price * quantity}
+                  Price: ${product.price * product.quantity}
                 </TypographyItem>
                 <TypographyItem variant="body2" color="text.secondary">
                   Quantity: {product.quantity}
