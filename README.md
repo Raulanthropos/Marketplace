@@ -18,6 +18,8 @@ This is the frontend of a mock e-shop application built using React, Zustand, an
 - **Reviews and Cart**: Logged-in users can add reviews and manage their shopping cart.
 - **LocalStorage Integration**: Auth and cart data stored in localStorage.
 
+Live demo of the application at [Marketplace]https://marketplace-9s7yexr9z-raulanthropos-projects.vercel.app/
+
 ## Getting Started
 
 ### Prerequisites
@@ -29,8 +31,8 @@ This is the frontend of a mock e-shop application built using React, Zustand, an
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/mock-eshop-frontend.git
-    cd mock-eshop-frontend
+    git clone https://github.com/Raulanthropos/Marketplace.git
+    cd Marketplace
     ```
 
 2. Install dependencies:
@@ -49,12 +51,11 @@ This is the frontend of a mock e-shop application built using React, Zustand, an
 
 The application will be available at `http://localhost:3000`.
 
+
 ## Project Structure
 
 - `src/components`: React components.
-- `src/pages`: Pages for different routes.
 - `src/store`: Zustand state management setup.
-- `src/utils`: Utility functions.
 
 ## Usage
 
@@ -62,12 +63,4 @@ The application will be available at `http://localhost:3000`.
 2. Browse products by category.
 3. View product details and add reviews (if logged in).
 4. Add products to the cart and manage the cart.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License.
 
