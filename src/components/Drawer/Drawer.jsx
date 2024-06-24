@@ -4,7 +4,7 @@ import { Grid, Typography } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from "@mui/system";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
@@ -12,64 +12,79 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useAuthStore from "../../store/auth";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "@mui/material";
+import useCartStore from "../../store/Cart";
+import { ShoppingCartOutlined } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import createTheme from "../../theme";
 
-const DRAWER_WIDTH = 250; // Default drawer width
-const MOBILE_DRAWER_WIDTH = 150; // Mobile drawer width
-
-const MainContainer = styled(Grid)(
-  ({ isDrawerOpenNormal, isDrawerOpenMobile }) => ({
-    backgroundColor: createTheme.palette.common.marketlightgrey,
-    color: createTheme.palette.secondary,
-    padding: "1rem",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginLeft: isDrawerOpenNormal ? `${DRAWER_WIDTH}px` : "0",
-    [createTheme.breakpoints.down("xs")]: {
-      marginLeft: isDrawerOpenMobile ? `${MOBILE_DRAWER_WIDTH}px` : "0",
-    },
-  })
-);
+const MainContainer = styled(Grid)(() => ({
+  backgroundColor: createTheme.palette.common.marketlightgrey,
+  color: createTheme.palette.secondary,
+  padding: "1rem",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  position: "fixed",
+  width: "100%",
+  marginTop: "-72px",
+  zIndex: 100,
+}));
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   marginBottom: theme.spacing(1),
   marginTop: theme.spacing(1),
 }));
 
 const LinkItem = styled(ListItemText)(({ theme }) => ({
-  color: "red",
+  color: createTheme.palette.common.marketblue,
   textDecoration: "none",
 }));
 
 const DrawerContainerStyle = styled(Box)(({ theme }) => ({
-  width: 250,
   padding: "1rem",
-  backgroundColor: theme.palette.primary,
-  color: theme.palette.secondary,
+  backgroundColor: createTheme.palette.common.marketlightgrey,
+  color: createTheme.palette.common.marketblue,
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
+  justifyContent: "flex-start",
   alignItems: "center",
-  [theme.breakpoints.down("xs")]: {
-    width: "150px",
-  },
+  height: "100%",
 }));
 
 export default function TemporaryDrawer() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-  const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
   const { setIsLoggedIn } = useAuthStore.getState();
   const baseUrl = process.env.REACT_APP_API_URL;
   const userName = JSON.parse(localStorage.getItem("user"))?.name;
-  const screenWidth = window.innerWidth || document.documentElement.clientWidth;
-  const drawerWidth = screenWidth <= 600 ? MOBILE_DRAWER_WIDTH : DRAWER_WIDTH;
-  const dynamicWidth = isDrawerOpen ? `calc(100% - ${drawerWidth}px` : "100%";
+  const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
+  const { cart } = useCartStore();
+  const navigate = useNavigate();
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  React.useEffect(() => {
+    const handleResize = debounce(() => setScreenWidth(window.innerWidth), 100);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const drawerWidth = 250;
+  const dynamicWidth = "150px";
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -105,6 +120,7 @@ export default function TemporaryDrawer() {
         role="presentation"
         onClick={toggleDrawer(false)}
         onKeyDown={toggleDrawer(false)}
+        sx={{ width: screenWidth <= 600 ? dynamicWidth : drawerWidth }}
       >
         <Divider />
         {isLoggedIn ? (
@@ -156,28 +172,36 @@ export default function TemporaryDrawer() {
     </>
   );
 
-  const isDrawerOpenNormal = 250;
-  const isDrawerOpenMobile = 150;
-
   return (
-    <MainContainer>
-      <Button onClick={toggleDrawer(true)}>
-        <MenuRoundedIcon />
-      </Button>
-      <Drawer anchor="left" open={isDrawerOpen}>
-        <IconButton
-          style={{
-            position: "absolute", // Adjust the position as needed
-            right: "5px", // Right offset
-            top: "5px", // Top offset
-            color: "grey", // Icon color, you can customize it
-          }}
-          onClick={toggleDrawer(false)}
-        >
-          <CloseIcon />
-        </IconButton>
-        {list}
-      </Drawer>
-    </MainContainer>
+    <>
+      <div style={{ height: "72px" }}></div>
+      <MainContainer>
+        <Button onClick={toggleDrawer(true)}>
+          <MenuRoundedIcon />
+        </Button>
+
+        <TypographyItem>
+          Cart Items: ({cart.reduce((total, item) => total + item.quantity, 0)})
+          <ShoppingCartOutlined
+            sx={{ marginLeft: "10px", cursor: "pointer" }}
+            onClick={() => navigate("/cart")}
+          />
+        </TypographyItem>
+        <Drawer anchor="left" open={isDrawerOpen}>
+          <IconButton
+            style={{
+              position: "absolute", // Adjust the position as needed
+              right: "5px", // Right offset
+              top: "5px", // Top offset
+              color: "grey", // Icon color, you can customize it
+            }}
+            onClick={toggleDrawer(false)}
+          >
+            <CloseIcon />
+          </IconButton>
+          {list}
+        </Drawer>
+      </MainContainer>
+    </>
   );
 }

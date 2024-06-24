@@ -18,15 +18,33 @@ const ContentWrapper = styled(Grid)(({ theme }) => ({
 
 const ColumnHalf = styled(Grid)(({ theme }) => ({
   flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 const Title = styled("h5")(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
+const Paragraph = styled("p")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "1rem",
+}))
+
 const List = styled("ul")(() => ({
   listStyle: "none",
   padding: 0,
+  margin: 0,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "1rem",
 }));
 
 const ListItem = styled(Link)(({ theme }) => ({
@@ -45,21 +63,19 @@ function Footer() {
       <ContentWrapper container justify="center">
         <ColumnHalf item xs={6}>
           <Title>Footer Content</Title>
-          <p>This mock eshop was created by Ioannis Psichias.</p>
+          <Paragraph>This mock eshop was created by Ioannis Psychias.</Paragraph>
         </ColumnHalf>
         <ColumnHalf item xs={6}>
           <Title>Links</Title>
           <List>
-            {/* Link 1: Send Email */}
-            <ListItem>
+            <Paragraph>
               <a
                 href={`mailto:${process.env.REACT_APP_EMAIL}`}
               >
-                Link 1
+                Email
               </a>
-            </ListItem>
-            {/* Link 2: LinkedIn */}
-            <ListItem>
+            </Paragraph>
+            <Paragraph>
               <a
                 href="https://www.linkedin.com/in/ioannis-psychias"
                 target="_blank"
@@ -67,9 +83,8 @@ function Footer() {
               >
                 LinkedIn
               </a>
-            </ListItem>
-            {/* Link 3: GitHub */}
-            <ListItem>
+            </Paragraph>
+            <Paragraph>
               <a
                 href="https://github.com/raulanthropos"
                 target="_blank"
@@ -77,7 +92,7 @@ function Footer() {
               >
                 GitHub
               </a>
-            </ListItem>
+            </Paragraph>
           </List>
         </ColumnHalf>
       </ContentWrapper>

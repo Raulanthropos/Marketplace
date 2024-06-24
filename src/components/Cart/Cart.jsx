@@ -10,7 +10,7 @@ import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@mui/material";
-import { CircularProgress } from "@mui/material";
+import createTheme from "../../theme";
 
 const MainContainer = styled("main")(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -71,6 +71,17 @@ const ModalContent = styled(Modal)(({ theme }) => ({
   padding: theme.spacing(2, 4, 3),
 }));
 
+const ButtonBack = styled(Button)(() => ({
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketwhite,
+    backgroundColor: createTheme.palette.common.marketmoss,
+  },
+}));
+
 const Cart = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -116,17 +127,16 @@ const Cart = () => {
                   Quantity: {product.quantity}
                 </TypographyItem>
               </CardContentItem>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => navigate(`/products/${product.id}`)}
-              >
-                View Product
-              </Button>
             </Card>
           );
         })}
       </CardContainer>
+        <ButtonBack
+          variant="contained"
+          onClick={() => navigate(`/`)}
+        >
+          Back to Main
+        </ButtonBack>
     </MainContainer>
   );
 };

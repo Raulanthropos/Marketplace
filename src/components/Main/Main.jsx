@@ -18,6 +18,7 @@ import createTheme from "../../theme";
 import { ShoppingCart } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { CircularProgress } from "@mui/material";
 // Define styled components
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -126,13 +127,11 @@ const ModalContent = styled(Modal)(({ theme }) => ({
   maxWidth: 400,
   maxHeight: "auto",
   margin: "auto",
-  overflowY: "scroll",
 }));
 
 const ModalReviews = styled(Modal)(({ theme }) => ({
   backgroundColor: "white",
   padding: theme.spacing(4),
-  border: "2px solid #000",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -180,6 +179,7 @@ const Main = () => {
   const { isLoggedIn } = useAuthStore();
   const [productsData, setProductsData] = useState();
   const [productData, setProductData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
@@ -198,9 +198,16 @@ const Main = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch(`${baseUrl}/products`);
-      const data = await response.json();
-      setProductsData(data.products);
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${baseUrl}/products`);
+        const data = await response.json();
+        setProductsData(data.products);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchProducts();
@@ -273,94 +280,108 @@ const Main = () => {
       <Subtitle>Garments and electronics</Subtitle>
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
-          {productsData?.map((product) => {
-            const cartItem = cart.find((item) => item._id === product._id);
-            const quantity = cartItem ? cartItem.quantity : 0;
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            productsData?.map((product) => {
+              const cartItem = cart.find((item) => item._id === product._id);
+              const quantity = cartItem ? cartItem.quantity : 0;
 
-            return (
-              <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
-                <CardItem>
-                  <CardMediaItem
-                    component="img"
-                    alt={product.name}
-                    image={product.imageUrl}
-                  />
-                  <CardContentItem>
-                    <TypographyTitle variant="h5">
-                      {product.name}
-                    </TypographyTitle>
-                    <TypographyItem variant="body2" color="textSecondary">
-                      {product.description}
-                    </TypographyItem>
-                    <ButtonItem onClick={() => fetchProduct(product)}>
-                      View Details
-                    </ButtonItem>
-                    {isLoggedIn ? (
-                      <ButtonReviewItem
-                        onClick={() => openReviewModal(product)}
-                      >
-                        Leave a review!
-                      </ButtonReviewItem>
-                    ) : (
-                      <TypographyItem variant="body2">
-                        Sign in to leave a review
+              return (
+                <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
+                  <CardItem>
+                    <CardMediaItem
+                      component="img"
+                      alt={product.name}
+                      image={product.imageUrl}
+                    />
+                    <CardContentItem>
+                      <TypographyTitle variant="h5">
+                        {product.name}
+                      </TypographyTitle>
+                      <TypographyItem variant="body2" color="textSecondary">
+                        {product.description}
                       </TypographyItem>
-                    )}
-                    <CardActions>
+                      <ButtonItem onClick={() => fetchProduct(product)}>
+                        View Details
+                      </ButtonItem>
                       {isLoggedIn ? (
-                        quantity > 0 ? (
-                          <>
-                            <Button
-                              size="small"
-                              color="primary"
-                              variant="contained"
-                              onClick={() => increaseQuantity(product)}
-                            >
-                              +
-                            </Button>
-                            <Typography variant="h6">{quantity}</Typography>
-                            <Button
-                              size="small"
-                              color="primary"
-                              variant="contained"
-                              onClick={() => decreaseQuantity(product)}
-                            >
-                              -
-                            </Button>
-                          </>
-                        ) : (
-                          <ButtonAddItem
-                            size="small"
-                            color="primary"
-                            onClick={() => addToCart(product)}
-                          >
-                            Add to Cart <ShoppingCart />
-                          </ButtonAddItem>
-                        )
+                        <ButtonReviewItem
+                          onClick={() => openReviewModal(product)}
+                        >
+                          Leave a review!
+                        </ButtonReviewItem>
                       ) : (
                         <TypographyItem variant="body2">
-                          Sign in to add to cart
+                          Sign in to leave a review
                         </TypographyItem>
                       )}
-                    </CardActions>
+                      <CardActions>
+                        {isLoggedIn ? (
+                          quantity > 0 ? (
+                            <>
+                              <Button
+                                size="small"
+                                color="primary"
+                                variant="contained"
+                                onClick={() => increaseQuantity(product)}
+                              >
+                                +
+                              </Button>
+                              <Typography variant="h6">{quantity}</Typography>
+                              <Button
+                                size="small"
+                                color="primary"
+                                variant="contained"
+                                onClick={() => decreaseQuantity(product)}
+                              >
+                                -
+                              </Button>
+                            </>
+                          ) : (
+                            <ButtonAddItem
+                              size="small"
+                              color="primary"
+                              onClick={() => addToCart(product)}
+                            >
+                              Add to Cart <ShoppingCart />
+                            </ButtonAddItem>
+                          )
+                        ) : (
+                          <TypographyItem variant="body2">
+                            Sign in to add to cart
+                          </TypographyItem>
+                        )}
+                      </CardActions>
 
-                    <TypographyItem variant="h5">
-                      {product.price}$
-                    </TypographyItem>
-                  </CardContentItem>
-                </CardItem>
-              </Grid>
-            );
-          })}
+                      <TypographyItem variant="h5">
+                        {product.price}$
+                      </TypographyItem>
+                    </CardContentItem>
+                  </CardItem>
+                </Grid>
+              );
+            })
+          )}
         </CardContainer>
       </MainContainer>
       <ModalContent
         open={buttonClicked}
-        onClose={() => setButtonClicked(false)}
         justifyContent="center"
         alignItems="center"
       >
         <CardItem>
+          <IconButton
+            style={{
+              position: "absolute",
+              right: "30px",
+              top: "35px",
+              color: "grey",
+            }}
+            onClick={() => setButtonClicked(false)}
+          >
+            <CloseIcon />
+          </IconButton>
           <CardMediaItem
             component="img"
             alt={productData.name}
@@ -420,10 +441,10 @@ const Main = () => {
           >
             <IconButton
               style={{
-                position: "absolute", // Adjust the position as needed
-                right: "10px", // Right offset
-                top: "10px", // Top offset
-                color: "white", // Icon color, you can customize it
+                position: "absolute",
+                right: "10px",
+                top: "10px",
+                color: "white",
               }}
               onClick={() => setOpen(false)}
             >
@@ -439,7 +460,14 @@ const Main = () => {
               required
               style={{ width: "100%", height: "100%", marginBottom: "10px" }}
             />
-            <Grid container style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Grid
+              container
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {[...Array(5)].map((_, i) => (
                 <label key={i}>
                   <input
