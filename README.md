@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Mock E-Shop Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend of a mock e-shop application built using React, Zustand, and Material-UI (MUI). The application is fully responsive and provides functionalities such as user registration, login, product viewing, adding reviews, and managing a shopping cart.
 
-## Available Scripts
+## Technologies Used
 
-In the project directory, you can run:
+- **React**: A JavaScript library for building user interfaces.
+- **Zustand**: A small, fast, and scalable bearbones state-management solution.
+- **Material-UI (MUI)**: A popular React UI framework.
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Responsive Design**: Fully responsive UI for optimal viewing across different devices.
+- **Product Categories**: Products categorized into clothing and electronics.
+- **Product Details**: View detailed information about each product in a modal.
+- **User Authentication**: Registration and login functionalities with JWT-based authentication.
+- **Drawer Navigation**: Navigation drawer for easy access to different sections.
+- **Reviews and Cart**: Logged-in users can add reviews and manage their shopping cart.
+- **LocalStorage Integration**: Auth and cart data stored in localStorage.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Live demo of the application at [Marketplace]https://marketplace-9s7yexr9z-raulanthropos-projects.vercel.app/
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js
+- npm or yarn
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/Raulanthropos/Marketplace.git
+    cd Marketplace
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-### `npm run eject`
+3. Start the development server:
+    ```bash
+    npm start
+    # or
+    yarn start
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The application will be available at `http://localhost:3000`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- `src/components`: React components.
+- `src/store`: Zustand state management setup.
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Register a new user or log in with existing credentials.
+2. Browse products by category.
+3. View product details and add reviews (if logged in).
+4. Add products to the cart and manage the cart.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
