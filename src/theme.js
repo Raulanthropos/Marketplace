@@ -14,6 +14,7 @@ const marketmoss = "#007E7D";
 const marketmossvariant = "#005B54";
 const marketwarning = "#FFC208";
 const marketwhite = "#FFFFFF";
+const marketblack = "#000000";
 // const marketwarning = '#ffc107'
 
 const textprimary = "#1e2b39";
@@ -247,6 +248,7 @@ export default createTheme({
       marketfooter1: `${marketfooter1}`,
       marketwarning: `${marketwarning}`,
       marketwhite: `${marketwhite}`,
+      marketblack: `${marketblack}`,
     },
     error: {
       main: `${marketred}`,

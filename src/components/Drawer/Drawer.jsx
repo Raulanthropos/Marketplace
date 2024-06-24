@@ -14,6 +14,8 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useAuthStore from "../../store/auth";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import createTheme from "../../theme";
 
 const DRAWER_WIDTH = 250; // Default drawer width
@@ -36,6 +38,7 @@ const MainContainer = styled(Grid)(
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
+  marginTop: theme.spacing(1),
 }));
 
 const LinkItem = styled(ListItemText)(({ theme }) => ({
@@ -107,7 +110,9 @@ export default function TemporaryDrawer() {
         {isLoggedIn ? (
           <List>
             <ListItem key={userName} disablePadding>
-          <TypographyItem variant="h6">Welcome back, {userName}!</TypographyItem>
+              <TypographyItem variant="h6">
+                Welcome back, {userName}!
+              </TypographyItem>
             </ListItem>
             <ListItem key="Main" disablePadding>
               <ListItemButton>
@@ -159,7 +164,18 @@ export default function TemporaryDrawer() {
       <Button onClick={toggleDrawer(true)}>
         <MenuRoundedIcon />
       </Button>
-      <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer anchor="left" open={isDrawerOpen}>
+        <IconButton
+          style={{
+            position: "absolute", // Adjust the position as needed
+            right: "5px", // Right offset
+            top: "5px", // Top offset
+            color: "grey", // Icon color, you can customize it
+          }}
+          onClick={toggleDrawer(false)}
+        >
+          <CloseIcon />
+        </IconButton>
         {list}
       </Drawer>
     </MainContainer>

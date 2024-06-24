@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import { styled } from "@mui/system";
+import Divider from "@mui/material/Divider";
 import {
   Card,
   CardActions,
@@ -14,7 +15,9 @@ import { Link } from "react-router-dom";
 import useCartStore from "../../store/Cart";
 import useAuthStore from "../../store/auth";
 import createTheme from "../../theme";
-
+import { ShoppingCart } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 // Define styled components
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -59,17 +62,17 @@ const CardMediaItem = styled(CardMedia)(({ theme }) => ({
   height: 140,
 }));
 
-const FormItem = styled('form')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%', // Ensure the form fills the width of its parent (ModalContent)
-  maxWidth: 600, // Example maximum width for responsiveness
+const FormItem = styled("form")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  maxWidth: 600,
   margin: theme.spacing(1),
   backgroundColor: createTheme.palette.secondary,
   color: createTheme.palette.primary,
-  overflow: 'hidden',
+  overflow: "hidden",
   flexShrink: 1,
 }));
 
@@ -84,6 +87,19 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+}));
+
+const ReviewTypographyItem = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(1),
+  display: "flex",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  width: "100%",
+  wordWrap: "nowrap",
 }));
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
@@ -108,8 +124,9 @@ const ModalContent = styled(Modal)(({ theme }) => ({
   alignItems: "center",
   width: "80%",
   maxWidth: 400,
-  maxHeight: 500,
+  maxHeight: "auto",
   margin: "auto",
+  overflowY: "scroll",
 }));
 
 const ModalReviews = styled(Modal)(({ theme }) => ({
@@ -128,11 +145,34 @@ const ModalReviews = styled(Modal)(({ theme }) => ({
 
 const ButtonItem = styled(Button)(() => ({
   marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
   backgroundColor: createTheme.palette.common.marketdarkblue,
   color: createTheme.palette.common.marketwhite,
   "&:hover": {
-    color: createTheme.palette.common.marketdarkblue,
-    backgroundColor: createTheme.palette.common.marketwhite,
+    color: createTheme.palette.common.marketblack,
+    backgroundColor: createTheme.palette.common.marketlightgrey,
+  },
+}));
+
+const ButtonReviewItem = styled(Button)(() => ({
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketwhite,
+    backgroundColor: createTheme.palette.common.marketgreen,
+  },
+}));
+
+const ButtonAddItem = styled(Button)(() => ({
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketwhite,
+    backgroundColor: createTheme.palette.common.marketmoss,
   },
 }));
 
@@ -229,8 +269,8 @@ const Main = () => {
 
   return (
     <>
-      <Title>Main Content</Title>
-      <Subtitle>Subtitle</Subtitle>
+      <Title>Marketplace</Title>
+      <Subtitle>Garments and electronics</Subtitle>
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
           {productsData?.map((product) => {
@@ -256,9 +296,11 @@ const Main = () => {
                       View Details
                     </ButtonItem>
                     {isLoggedIn ? (
-                      <Button onClick={() => openReviewModal(product)}>
+                      <ButtonReviewItem
+                        onClick={() => openReviewModal(product)}
+                      >
                         Leave a review!
-                      </Button>
+                      </ButtonReviewItem>
                     ) : (
                       <TypographyItem variant="body2">
                         Sign in to leave a review
@@ -272,28 +314,28 @@ const Main = () => {
                               size="small"
                               color="primary"
                               variant="contained"
-                              onClick={() => decreaseQuantity(product)}
+                              onClick={() => increaseQuantity(product)}
                             >
-                              -
+                              +
                             </Button>
                             <Typography variant="h6">{quantity}</Typography>
                             <Button
                               size="small"
                               color="primary"
                               variant="contained"
-                              onClick={() => increaseQuantity(product)}
+                              onClick={() => decreaseQuantity(product)}
                             >
-                              +
+                              -
                             </Button>
                           </>
                         ) : (
-                          <Button
+                          <ButtonAddItem
                             size="small"
                             color="primary"
                             onClick={() => addToCart(product)}
                           >
-                            Add to Cart
-                          </Button>
+                            Add to Cart <ShoppingCart />
+                          </ButtonAddItem>
                         )
                       ) : (
                         <TypographyItem variant="body2">
@@ -339,54 +381,86 @@ const Main = () => {
                 "en-UK"
               );
               return (
-                <div key={review._id}>
-                  <TypographyItem variant="h6" color="textSecondary">
-                    Posted By: Anonymous
-                    <br />
-                    Date Posted: {formattedDate}
-                    <br />
-                    Rate: {review.rate}
-                    <br />
-                    Comment: {review.comment}
-                  </TypographyItem>
-                </div>
+                <Grid container key={review._id}>
+                  <ReviewTypographyItem variant="body2" color="textSecondary">
+                    <b style={{ marginRight: "0.5rem" }}>Posted By: </b>{" "}
+                    Anonymous
+                  </ReviewTypographyItem>
+                  <ReviewTypographyItem variant="body2" color="textSecondary">
+                    <b style={{ marginRight: "0.5rem" }}>Date Posted: </b>{" "}
+                    {formattedDate}
+                  </ReviewTypographyItem>
+                  <ReviewTypographyItem variant="body2" color="textSecondary">
+                    <b style={{ marginRight: "0.5rem" }}>Rate: </b>{" "}
+                    {review.rate}
+                  </ReviewTypographyItem>
+                  <ReviewTypographyItem variant="body2" color="textSecondary">
+                    <b style={{ marginRight: "0.5rem" }}>Comment: </b>
+                    {review.comment}
+                  </ReviewTypographyItem>
+                  <Divider style={{ width: "100%", margin: "1rem 0" }} />
+                </Grid>
               );
             })}
           </CardContentItem>
         </CardItem>
       </ModalContent>
-      <ModalReviews open={open} onClose={() => setOpen(false)}>
+      <ModalReviews open={open}>
         <FormItem>
-        <form onSubmit={(e) => e.preventDefault()} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-          <TypographyItem variant="h5">Leave a review</TypographyItem>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="0/200"
-            maxLength="200"
-            rows="10"
-            required
-            style={{ width: "100%", height: "100%", marginBottom: "10px" }}
-          />
-          <div>
-            {[...Array(5)].map((_, i) => (
-              <label key={i}>
-                <input
-                  type="radio"
-                  name="rate"
-                  value={i + 1}
-                  checked={rate === i + 1}
-                  onChange={(e) => setRate(i + 1)}
-                  required
-                />
-                ★
-              </label>
-            ))}
-          </div>
-          <Button type="submit" onClick={() => postReview(productData)}>
-            Submit
-          </Button>
-        </form>
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <IconButton
+              style={{
+                position: "absolute", // Adjust the position as needed
+                right: "10px", // Right offset
+                top: "10px", // Top offset
+                color: "white", // Icon color, you can customize it
+              }}
+              onClick={() => setOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+            <TypographyItem variant="h5">Leave a review</TypographyItem>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="0/200"
+              maxLength="200"
+              rows="10"
+              required
+              style={{ width: "100%", height: "100%", marginBottom: "10px" }}
+            />
+            <Grid container style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {[...Array(5)].map((_, i) => (
+                <label key={i}>
+                  <input
+                    type="radio"
+                    name="rate"
+                    value={i + 1}
+                    checked={rate === i + 1}
+                    onChange={(e) => setRate(i + 1)}
+                    required
+                  />
+                  ★
+                </label>
+              ))}
+            </Grid>
+            <ButtonAddItem
+              type="submit"
+              onClick={() => postReview(productData)}
+            >
+              Submit
+            </ButtonAddItem>
+          </form>
         </FormItem>
       </ModalReviews>
     </>
