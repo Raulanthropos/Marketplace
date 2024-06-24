@@ -18,7 +18,7 @@ This is the frontend of a mock e-shop application built using React, Zustand, an
 - **Reviews and Cart**: Logged-in users can add reviews and manage their shopping cart.
 - **LocalStorage Integration**: Auth and cart data stored in localStorage.
 
-Live demo of the application at [Marketplace]https://marketplace-9s7yexr9z-raulanthropos-projects.vercel.app/
+Live demo of the application at [Marketplace](https://marketplace-omega-tawny.vercel.app)
 
 ## Getting Started
 
