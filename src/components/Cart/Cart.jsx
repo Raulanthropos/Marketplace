@@ -11,8 +11,9 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@mui/material";
 import createTheme from "../../theme";
+import { CardGiftcard } from "@mui/icons-material";
 
-const MainContainer = styled("main")(({ theme }) => ({
+const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
   padding: "1rem",
@@ -21,43 +22,45 @@ const MainContainer = styled("main")(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  width: "100%",
+  maxWidth: "100%",
 }));
 
 const Title = styled("h1")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
 }));
 
 const Subtitle = styled("h2")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
 }));
 
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
   flexWrap: "wrap",
+  width: "100%",
   gap: theme.spacing(2),
+  marginTop: theme.spacing(2),
 }));
 
 const CardContentItem = styled(CardContent)(({ theme }) => ({
   display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
+  flexDirection: "row",
+  justifyContent: "space-around",
   alignItems: "center",
-  maxWidth: "100%",
+  width: "100%",
   wordWrap: "break-word",
+  gap: theme.spacing(2),
 }));
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
 }));
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-  whiteSpace: "nowrap",
+  whiteSpace: "wrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  width: "250px",
+  maxWidth: "125px",
 }));
 
 const LinkItem = styled(Link)(({ theme }) => ({
@@ -87,8 +90,6 @@ const Cart = () => {
   const { user } = useAuthStore();
   const { cart } = useCartStore();
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   return (
     <MainContainer>
       <Title>Cart</Title>
@@ -99,8 +100,7 @@ const Cart = () => {
             <Card
               key={product._id}
               sx={{
-                width: 300,
-                height: 300,
+                width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -108,22 +108,22 @@ const Cart = () => {
               }}
             >
               <CardContentItem>
-                <CardMedia
+                {/* <CardMedia
                   component="img"
-                  height="200"
+                  height="20"
                   image={product.imageUrl}
                   alt={product.title}
-                />
-                <TypographyTitle variant="h5" component="div">
-                  {product.title}
+                /> */}
+                <TypographyTitle variant="h5">
+                  {product.name}
                 </TypographyTitle>
-                <TypographyItem variant="body2" color="text.secondary">
-                  {product.category}
+                <TypographyItem variant="h6" color="text.secondary">
+                  Category: {product.category}
                 </TypographyItem>
-                <TypographyItem variant="body2" color="text.secondary">
-                  Price: ${product.price * product.quantity}
+                <TypographyItem variant="h6" color="text.secondary">
+                  Price: {product.price * product.quantity}$
                 </TypographyItem>
-                <TypographyItem variant="body2" color="text.secondary">
+                <TypographyItem variant="h6" color="text.secondary">
                   Quantity: {product.quantity}
                 </TypographyItem>
               </CardContentItem>
@@ -131,12 +131,17 @@ const Cart = () => {
           );
         })}
       </CardContainer>
-        <ButtonBack
-          variant="contained"
-          onClick={() => navigate(`/`)}
-        >
-          Back to Main
-        </ButtonBack>
+      <CardContainer>
+        <TypographyItem>
+      Cart Items: ({cart.reduce((total, item) => total + item.quantity, 0)})
+        </TypographyItem>
+        <TypographyItem>
+        Cart Total: {cart.reduce((total, item) => total + item.price * item.quantity, 0)}$
+        </TypographyItem>
+      </CardContainer>
+      <ButtonBack variant="contained" onClick={() => navigate(`/`)}>
+        Back to Main
+      </ButtonBack>
     </MainContainer>
   );
 };

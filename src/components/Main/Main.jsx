@@ -175,6 +175,20 @@ const ButtonAddItem = styled(Button)(() => ({
   },
 }));
 
+const Star = styled(Button)(({ theme }) => ({
+  fontSize: "24px",
+  cursor: "pointer",
+  "&:hover": {
+    color: createTheme.palette.common.marketmoss,
+  },
+  "&.star-image-important": {
+    color: createTheme.palette.common.marketwarning,
+  },
+  "&.star-image-white": {
+    color: createTheme.palette.common.marketwhite,
+  },
+}));
+
 const Main = () => {
   const { isLoggedIn } = useAuthStore();
   const [productsData, setProductsData] = useState();
@@ -184,6 +198,20 @@ const Main = () => {
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(null);
+  const [hoverIndex, setHoverIndex] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const handleClick = (index) => {
+    setSelectedIndex(index);
+    setRate(index + 1);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedIndex(null);
+    setRate(null);
+  };
+
   const { cart, addToCart, increaseQuantity, decreaseQuantity } = useCartStore(
     (state) => ({
       cart: state.cart,
@@ -193,8 +221,6 @@ const Main = () => {
     })
   );
   const baseUrl = process.env.REACT_APP_API_URL;
-
-  // console.log("Cart", cart);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -446,11 +472,12 @@ const Main = () => {
                 top: "10px",
                 color: "white",
               }}
-              onClick={() => setOpen(false)}
+              onClick={() => handleClose()}
             >
               <CloseIcon />
             </IconButton>
-            <TypographyItem variant="h5">Leave a review</TypographyItem>
+            <TypographyItem variant="h6">Leave a review for</TypographyItem>
+            <TypographyItem variant="h5">{productData.name}</TypographyItem>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -468,19 +495,20 @@ const Main = () => {
                 justifyContent: "center",
               }}
             >
-              {[...Array(5)].map((_, i) => (
-                <label key={i}>
-                  <input
-                    type="radio"
-                    name="rate"
-                    value={i + 1}
-                    checked={rate === i + 1}
-                    onChange={(e) => setRate(i + 1)}
-                    required
-                  />
-                  ★
-                </label>
-              ))}
+              {[...Array(5)].map((_, index) => {
+                const isSelected =
+                  selectedIndex !== null && index <= selectedIndex;
+
+                return (
+                  <Star
+                    key={index}
+                    className={`${isSelected ? "star-image-important" : "star-image-white"}`}
+                    onClick={() => handleClick(index)}
+                  >
+                    ★
+                  </Star>
+                );
+              })}
             </Grid>
             <ButtonAddItem
               type="submit"
