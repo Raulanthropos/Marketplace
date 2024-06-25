@@ -1,17 +1,12 @@
-//Create a simple cart, styled with MUI
-
-import React, { useState } from "react";
+import React from "react";
 import { styled } from "@mui/system";
-import { Card, CardContent, Typography, CardMedia } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Card, CardContent, Typography } from "@mui/material";
 import useAuthStore from "../../store/auth";
 import useCartStore from "../../store/Cart";
 import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "@mui/material";
 import createTheme from "../../theme";
-import { CardGiftcard } from "@mui/icons-material";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -63,16 +58,16 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
   maxWidth: "125px",
 }));
 
-const LinkItem = styled(Link)(({ theme }) => ({
-  color: theme.palette.secondary,
-  textDecoration: "none",
-}));
+// const LinkItem = styled(Link)(({ theme }) => ({
+//   color: theme.palette.secondary,
+//   textDecoration: "none",
+// }));
 
-const ModalContent = styled(Modal)(({ theme }) => ({
-  backgroundColor: theme.palette.background,
-  border: "2px solid #000",
-  padding: theme.spacing(2, 4, 3),
-}));
+// const ModalContent = styled(Modal)(({ theme }) => ({
+//   backgroundColor: theme.palette.background,
+//   border: "2px solid #000",
+//   padding: theme.spacing(2, 4, 3),
+// }));
 
 const ButtonBack = styled(Button)(() => ({
   marginTop: createTheme.spacing(2),
@@ -89,7 +84,6 @@ const Cart = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { cart } = useCartStore();
-  const [open, setOpen] = useState(false);
   return (
     <MainContainer>
       <Title>Cart</Title>

@@ -104,6 +104,7 @@ export default function TemporaryDrawer() {
 
       if (response.ok) {
         localStorage.clear();
+        localStorage.setItem("user", JSON.stringify(null));
         setIsLoggedIn(false);
         window.location.href = "/";
       } else {

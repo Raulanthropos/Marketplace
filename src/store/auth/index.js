@@ -1,12 +1,6 @@
 import create from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
-const stateTransformer = (state) => {
-  return Object.fromEntries(
-    Object.entries(state).filter(([key]) => typeof state[key] !== 'function')
-  )
-}
-
 const useAuthStore = create(
   devtools(
     persist(
@@ -17,11 +11,31 @@ const useAuthStore = create(
       {
         name: 'auth',
         getStorage: () => localStorage,
-        serialize: stateTransformer,
-        deserialize: stateTransformer,
       }
     )
   )
 )
 
 export default useAuthStore
+
+// import create from 'zustand'
+// import { devtools, persist } from 'zustand/middleware'
+
+// const useAuthStore = create(
+//   devtools(
+//     persist(
+//       (set) => ({
+//         isLoggedIn: false,
+//         accessToken: null,
+//         setIsLoggedIn: (value) => set({ isLoggedIn: value }),
+//         setAccessToken: (token) => set({ accessToken: token }),
+//       }),
+//       {
+//         name: 'auth',
+//         getStorage: () => localStorage,
+//       }
+//     )
+//   )
+// )
+
+// export default useAuthStore

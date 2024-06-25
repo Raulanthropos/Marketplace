@@ -7,13 +7,15 @@ import {
   TextField,
   CircularProgress,
   Snackbar,
+  SnackbarContent,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/system";
 import useAuthStore from "../../store/auth";
+import createTheme from "../../theme";
 
-const MainContainer = styled("main")(({ theme }) => ({
+const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
   padding: "1rem",
@@ -23,13 +25,13 @@ const MainContainer = styled("main")(({ theme }) => ({
   alignItems: "center",
 }));
 
-const Title = styled("h1")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
+// const Title = styled("h1")(({ theme }) => ({
+//   marginBottom: theme.spacing(1),
+// }));
 
-const Subtitle = styled("h2")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
+// const Subtitle = styled("h2")(({ theme }) => ({
+//   marginBottom: theme.spacing(1),
+// }));
 
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -47,9 +49,9 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
   wordWrap: "break-word",
 }));
 
-const TypographyItem = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-}));
+// const TypographyItem = styled(Typography)(({ theme }) => ({
+//   marginBottom: theme.spacing(1),
+// }));
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -63,14 +65,16 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // Add a loading state
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // Add a state for Snackbar visibility
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarType, setSnackbarType] = useState("");
   const { setIsLoggedIn } = useAuthStore.getState();
   const baseUrl = process.env.REACT_APP_API_URL;
-  const navigate = useNavigate(); // Instantiate navigate function to redirect user
+  const navigate = useNavigate();
 
   const handleRegister = () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     fetch(`${baseUrl}/users/register`, {
       method: "POST",
       headers: {
@@ -90,18 +94,31 @@ const Register = () => {
         }
       })
       .then((data) => {
-        console.log(data);
-        setLoading(false); // Stop loading
+        setLoading(false);
         setIsLoggedIn(true);
-        setSnackbarOpen(true); // Show success notification
-        navigate("/"); // Redirect to the main screen
+        setSnackbarMessage("User registered successfully!");
+        setSnackbarType("success");
+        setSnackbarOpen(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({ accessToken: data.accessToken })
+        );
+        localStorage.setItem("user", JSON.stringify(data.user));
       })
       .catch((error) => {
         console.error(
           "There has been a problem with your fetch operation:",
           error
         );
-        setLoading(false); // Stop loading in case of error
+        setSnackbarMessage(
+          "Registration failed. Please check the credentials you tried registering with."
+        );
+        setSnackbarType("error");
+        setSnackbarOpen(true);
+        setLoading(false);
       });
   };
 
@@ -163,7 +180,22 @@ const Register = () => {
             autoHideDuration={6000}
             onClose={handleCloseSnackbar}
             message="User created successfully!"
-          />
+          >
+            <SnackbarContent
+              message={snackbarMessage}
+              style={
+                snackbarType === "success"
+                  ? {
+                      backgroundColor: createTheme.palette.common.marketgreen,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+                  : {
+                      backgroundColor: createTheme.palette.common.marketred,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+              }
+            />
+          </Snackbar>
         </Card>
       </CardContainer>
     </MainContainer>

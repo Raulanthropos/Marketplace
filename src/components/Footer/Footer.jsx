@@ -1,9 +1,7 @@
 import React from "react";
 import { Link, Grid, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import createTheme from "../../theme";
 
-// Define styled components
 const FooterContainer = styled("footer")(({ theme }) => ({
   backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
@@ -29,13 +27,13 @@ const Title = styled("h5")(({ theme }) => ({
   paddingBottom: theme.spacing(1),
 }));
 
-const Paragraph = styled(Typography)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "1rem",
-}));
+// const Paragraph = styled(Typography)(({ theme }) => ({
+//   display: "flex",
+//   flexDirection: "row",
+//   justifyContent: "center",
+//   alignItems: "center",
+//   gap: "1rem",
+// }));
 
 const List = styled("ul")(() => ({
   listStyle: "none",
@@ -58,27 +56,6 @@ const ListItem = styled(Link)(({ theme }) => ({
 }));
 
 function Footer() {
-  const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  React.useEffect(() => {
-    const handleResize = debounce(() => setScreenWidth(window.innerWidth), 100);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const footerHeightMobile = "50px";
-  const footerHeightTwoLines = "75px";
   return (
     <FooterContainer>
       <ContentWrapper container justify="center">

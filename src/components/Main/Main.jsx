@@ -9,6 +9,8 @@ import {
   CardContent,
   CardMedia,
   Typography,
+  Snackbar,
+  SnackbarContent,
 } from "@mui/material";
 import { Modal } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -19,7 +21,7 @@ import { ShoppingCart } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
-// Define styled components
+
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
@@ -55,7 +57,7 @@ const CardItem = styled(Card)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  overflow: "hidden",
+  overflowY: "scroll",
   flexShrink: 1,
 }));
 
@@ -111,10 +113,10 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
   width: "250px",
 }));
 
-const LinkItem = styled(Link)(({ theme }) => ({
-  color: theme.palette.secondary,
-  textDecoration: "none",
-}));
+// const LinkItem = styled(Link)(({ theme }) => ({
+//   color: theme.palette.secondary,
+//   textDecoration: "none",
+// }));
 
 const ModalContent = styled(Modal)(({ theme }) => ({
   backgroundColor: createTheme.palette.background,
@@ -138,7 +140,7 @@ const ModalReviews = styled(Modal)(({ theme }) => ({
   alignItems: "center",
   width: "80%",
   maxWidth: 400,
-  maxHeight: 500,
+  maxHeight: "auto",
   margin: "auto",
 }));
 
@@ -198,8 +200,10 @@ const Main = () => {
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(null);
-  const [hoverIndex, setHoverIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarType, setSnackbarType] = useState("");
 
   const handleClick = (index) => {
     setSelectedIndex(index);
@@ -212,9 +216,10 @@ const Main = () => {
     setRate(null);
   };
 
-  const { cart, addToCart, increaseQuantity, decreaseQuantity } = useCartStore(
+  const { cart } = useCartStore();
+
+  const { addToCart, increaseQuantity, decreaseQuantity } = useCartStore(
     (state) => ({
-      cart: state.cart,
       addToCart: state.addToCart,
       increaseQuantity: state.increaseQuantity,
       decreaseQuantity: state.decreaseQuantity,
@@ -286,10 +291,17 @@ const Main = () => {
       }
 
       const data = await response.json();
-      console.log("Data review", data);
-      setOpen(false);
+      setSnackbarMessage("Review was posted successfully!");
+      setSnackbarType("success");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+        setOpen(false);
+      }, 1000);
       return data;
     } catch (error) {
+      setSnackbarMessage("Error posting review!");
+      setSnackbarType("error");
+      setSnackbarOpen(true);
       console.error("Error posting review:", error);
       // Handle error as needed
     }
@@ -298,6 +310,10 @@ const Main = () => {
   const openReviewModal = (product) => {
     setProductData(product);
     setOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -493,6 +509,7 @@ const Main = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexWrap: "nowrap",
               }}
             >
               {[...Array(5)].map((_, index) => {
@@ -517,6 +534,26 @@ const Main = () => {
               Submit
             </ButtonAddItem>
           </form>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleCloseSnackbar}
+          >
+            <SnackbarContent
+              message={snackbarMessage}
+              style={
+                snackbarType === "success"
+                  ? {
+                      backgroundColor: createTheme.palette.common.marketgreen,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+                  : {
+                      backgroundColor: createTheme.palette.common.marketred,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+              }
+            />
+          </Snackbar>
         </FormItem>
       </ModalReviews>
     </>

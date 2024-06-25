@@ -7,13 +7,15 @@ import {
   TextField,
   CircularProgress,
   Snackbar,
+  SnackbarContent,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/system";
 import useAuthStore from "../../store/auth";
+import createTheme from "../../theme";
 
-const MainContainer = styled("main")(({ theme }) => ({
+const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
   padding: "1rem",
@@ -52,6 +54,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarType, setSnackbarType] = useState("");
   const { setIsLoggedIn } = useAuthStore.getState();
   const baseUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
@@ -76,11 +80,14 @@ const Login = () => {
         }
       })
       .then((data) => {
-        console.log(data);
         setLoading(false);
         setIsLoggedIn(true);
+        setSnackbarMessage("User logged in successfully!");
+        setSnackbarType("success");
         setSnackbarOpen(true);
-        navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
         localStorage.setItem(
           "auth",
           JSON.stringify({ accessToken: data.accessToken })
@@ -92,6 +99,11 @@ const Login = () => {
           "There has been a problem with your fetch operation:",
           error
         );
+        setSnackbarMessage(
+          "Login failed. Please check your email and password."
+        );
+        setSnackbarType("error");
+        setSnackbarOpen(true);
         setLoading(false);
       });
   };
@@ -144,8 +156,22 @@ const Login = () => {
             open={snackbarOpen}
             autoHideDuration={6000}
             onClose={handleCloseSnackbar}
-            message="User logged in successfully!"
-          />
+          >
+            <SnackbarContent
+              message={snackbarMessage}
+              style={
+                snackbarType === "success"
+                  ? {
+                      backgroundColor: createTheme.palette.common.marketgreen,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+                  : {
+                      backgroundColor: createTheme.palette.common.marketred,
+                      color: createTheme.palette.common.marketwhite,
+                    }
+              }
+            />
+          </Snackbar>
         </Card>
       </CardContainer>
     </MainContainer>
