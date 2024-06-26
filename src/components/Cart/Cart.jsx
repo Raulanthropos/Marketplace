@@ -1,7 +1,6 @@
 import React from "react";
 import { styled } from "@mui/system";
 import { Card, CardContent, Typography } from "@mui/material";
-import useAuthStore from "../../store/auth";
 import useCartStore from "../../store/Cart";
 import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
@@ -82,7 +81,6 @@ const ButtonBack = styled(Button)(() => ({
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const { cart } = useCartStore();
   return (
     <MainContainer>

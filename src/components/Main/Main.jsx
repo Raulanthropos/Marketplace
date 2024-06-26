@@ -15,12 +15,13 @@ import {
 import { Modal } from "@mui/material";
 import { Link } from "react-router-dom";
 import useCartStore from "../../store/Cart";
-import useAuthStore from "../../store/auth";
+import { SET_IS_LOGGED_IN } from "../../store/redux/actions";
 import createTheme from "../../theme";
 import { ShoppingCart } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -192,7 +193,7 @@ const Star = styled(Button)(({ theme }) => ({
 }));
 
 const Main = () => {
-  const { isLoggedIn } = useAuthStore();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const [productsData, setProductsData] = useState();
   const [productData, setProductData] = useState({});
   const [isLoading, setIsLoading] = useState(true);

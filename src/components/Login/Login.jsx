@@ -10,9 +10,10 @@ import {
   SnackbarContent,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/system";
-import useAuthStore from "../../store/auth";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../store/redux/actions";
 import createTheme from "../../theme";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -56,65 +57,44 @@ const Login = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
-  const { setIsLoggedIn } = useAuthStore.getState();
-  const baseUrl = process.env.REACT_APP_API_URL;
+
+  // Use useDispatch to get the dispatch function
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    setLoading(true);
-    fetch(`${baseUrl}/users/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Network response was not ok.");
-        }
-      })
-      .then((data) => {
-        setLoading(false);
-        setIsLoggedIn(true);
-        setSnackbarMessage("User logged in successfully!");
-        setSnackbarType("success");
-        setSnackbarOpen(true);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-        localStorage.setItem(
-          "auth",
-          JSON.stringify({ accessToken: data.accessToken })
-        );
-        localStorage.setItem("user", JSON.stringify(data.user));
-      })
-      .catch((error) => {
-        console.error(
-          "There has been a problem with your fetch operation:",
-          error
-        );
-        setSnackbarMessage(
-          "Login failed. Please check your email and password."
-        );
-        setSnackbarType("error");
-        setSnackbarOpen(true);
-        setLoading(false);
-      });
+      setLoading(true);
+      dispatch(login(email, password))
+         .then(() => {
+              setLoading(false);
+              setSnackbarMessage("User logged in successfully!");
+              setSnackbarType("success");
+              setSnackbarOpen(true);
+              setTimeout(() => {
+                  navigate("/");
+              }, 1000);
+          })
+         .catch((error) => {
+              console.error(
+                  "There has been a problem with your fetch operation:",
+                  error
+              );
+              setSnackbarMessage(
+                  "Login failed. Please check your email and password."
+              );
+              setSnackbarType("error");
+              setSnackbarOpen(true);
+              setLoading(false);
+          });
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    handleLogin();
+      event.preventDefault();
+      handleLogin();
   };
 
   const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
+      setSnackbarOpen(false);
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Grid,
   Button,
@@ -12,8 +13,9 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/system";
-import useAuthStore from "../../store/auth";
 import createTheme from "../../theme";
+import { SET_IS_LOGGED_IN } from "../../store/redux/actions";
+import { register } from "../../store/redux/actions";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -69,44 +71,22 @@ const Register = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
-  const { setIsLoggedIn } = useAuthStore.getState();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
   const baseUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   const handleRegister = () => {
     setLoading(true);
-    fetch(`${baseUrl}/users/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Network response was not ok.");
-        }
-      })
-      .then((data) => {
+    dispatch(register(name, email, password))
+      .then(() => {
         setLoading(false);
-        setIsLoggedIn(true);
         setSnackbarMessage("User registered successfully!");
         setSnackbarType("success");
         setSnackbarOpen(true);
         setTimeout(() => {
           navigate("/");
         }, 1000);
-        localStorage.setItem(
-          "auth",
-          JSON.stringify({ accessToken: data.accessToken })
-        );
-        localStorage.setItem("user", JSON.stringify(data.user));
       })
       .catch((error) => {
         console.error(
@@ -166,7 +146,6 @@ const Register = () => {
               onChange={(event) => setPassword(event.target.value)}
             />
           </CardContentItem>
-          {/* ... (The rest of the JSX remains the same) */}
           <Button
             variant="contained"
             color="primary"
