@@ -13,15 +13,15 @@ import {
   SnackbarContent,
 } from "@mui/material";
 import { Modal } from "@mui/material";
-import { Link } from "react-router-dom";
 import useCartStore from "../../store/Cart";
-import { SET_IS_LOGGED_IN } from "../../store/redux/actions";
 import createTheme from "../../theme";
 import { ShoppingCart } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import CategoryFilter from "../../hooks/filters/CategoryFilters";
+import SortOptions from "../../hooks/filters/SortFilters";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -114,11 +114,6 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
   width: "250px",
 }));
 
-// const LinkItem = styled(Link)(({ theme }) => ({
-//   color: theme.palette.secondary,
-//   textDecoration: "none",
-// }));
-
 const ModalContent = styled(Modal)(({ theme }) => ({
   backgroundColor: createTheme.palette.background,
   padding: theme.spacing(4),
@@ -205,6 +200,8 @@ const Main = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   const handleClick = (index) => {
     setSelectedIndex(index);
@@ -232,7 +229,8 @@ const Main = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${baseUrl}/products`);
+        const queryString = `?category=${selectedCategory}&sortBy=price&sortOrder=${sortOrder}`;
+        const response = await fetch(`${baseUrl}/products${queryString}`);
         const data = await response.json();
         setProductsData(data.products);
       } catch (error) {
@@ -241,10 +239,19 @@ const Main = () => {
         setIsLoading(false);
       }
     };
-
+  
     fetchProducts();
     //eslint-disable-next-line
-  }, []);
+  }, [selectedCategory, sortOrder]);
+  
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+  };
 
   const fetchProduct = async (product) => {
     const response = await fetch(`${baseUrl}/products/${product._id}`);
@@ -321,6 +328,8 @@ const Main = () => {
     <>
       <Title>Marketplace</Title>
       <Subtitle>Garments and electronics</Subtitle>
+      <CategoryFilter onSelectCategory={handleCategoryChange} />
+      <SortOptions onSelectSort={handleSortChange} />
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
           {isLoading ? (
@@ -520,7 +529,9 @@ const Main = () => {
                 return (
                   <Star
                     key={index}
-                    className={`${isSelected ? "star-image-important" : "star-image-white"}`}
+                    className={`${
+                      isSelected ? "star-image-important" : "star-image-white"
+                    }`}
                     onClick={() => handleClick(index)}
                   >
                     ★
