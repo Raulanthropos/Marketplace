@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
@@ -11,12 +11,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import useAuthStore from "../../store/auth";
 import useCartStore from "../../store/Cart";
 import { ShoppingCartOutlined } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import createTheme from "../../theme";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/redux/actions";
 
 const MainContainer = styled(Grid)(() => ({
   backgroundColor: createTheme.palette.common.marketlightgrey,
@@ -57,13 +58,16 @@ const DrawerContainerStyle = styled(Box)(({ theme }) => ({
 
 export default function TemporaryDrawer() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-  const { isLoggedIn } = useAuthStore();
-  const { setIsLoggedIn } = useAuthStore.getState();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
   const baseUrl = process.env.REACT_APP_API_URL;
   const userName = JSON.parse(localStorage.getItem("user"))?.name;
   const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
   const { cart } = useCartStore();
   const navigate = useNavigate();
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+  const [snackbarType, setSnackbarType] = React.useState("");
 
   const debounce = (func, wait) => {
     let timeout;
@@ -96,24 +100,50 @@ export default function TemporaryDrawer() {
     setIsDrawerOpen(open);
   };
 
-  const logout = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/users/logout`, {
-        method: "POST",
-      });
-
-      if (response.ok) {
-        localStorage.clear();
-        localStorage.setItem("user", JSON.stringify(null));
-        setIsLoggedIn(false);
-        window.location.href = "/";
-      } else {
-        console.error("Logout failed:", response.status);
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-    }
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
+
+  const handleLogout = async () => {
+    dispatch(logout())
+      .then(() => {
+        setSnackbarMessage("User logged out successfully!");
+        setSnackbarType("success");
+        setSnackbarOpen(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      })
+      .catch((error) => {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+        setSnackbarMessage(
+          "Login failed. Please check your email and password."
+        );
+        setSnackbarType("error");
+        setSnackbarOpen(true);
+      });
+  };
+
+  // const logout = async () => {
+  //   try {
+  //     const response = await fetch(`${baseUrl}/users/logout`, {
+  //       method: "POST",
+  //     });
+
+  //     if (response.ok) {
+  //       localStorage.clear();
+  //       localStorage.setItem("user", JSON.stringify(null));
+  //       window.location.href = "/";
+  //     } else {
+  //       console.error("Logout failed:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error("Network error:", error);
+  //   }
+  // };
 
   const list = (
     <>
@@ -146,7 +176,7 @@ export default function TemporaryDrawer() {
               </ListItemButton>
             </ListItem>
             <ListItem key="Logout" disablePadding>
-              <ListItemButton onClick={logout}>
+              <ListItemButton onClick={handleLogout}>
                 <ListItemText primary="Logout" />
               </ListItemButton>
             </ListItem>
@@ -202,6 +232,26 @@ export default function TemporaryDrawer() {
           </IconButton>
           {list}
         </Drawer>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <SnackbarContent
+            message={snackbarMessage}
+            style={
+              snackbarType === "success"
+                ? {
+                    backgroundColor: createTheme.palette.common.marketgreen,
+                    color: createTheme.palette.common.marketwhite,
+                  }
+                : {
+                    backgroundColor: createTheme.palette.common.marketred,
+                    color: createTheme.palette.common.marketwhite,
+                  }
+            }
+          />
+        </Snackbar>
       </MainContainer>
     </>
   );
