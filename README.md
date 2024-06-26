@@ -1,4 +1,4 @@
-# Mock E-Shop Frontend
+# Garments and Electronics Frontend
 
 This is the frontend of a mock e-shop application built using React, Redux, Zustand, and Material-UI (MUI). The application is fully responsive and provides functionalities such as user registration, login, product viewing, adding reviews, and managing a shopping cart.
 
