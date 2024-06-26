@@ -6,6 +6,7 @@ This is the frontend of a mock e-shop application built using React, Redux, Zust
 
 - **React**: A JavaScript library for building user interfaces.
 - **Zustand**: A small, fast, and scalable bearbones state-management solution.
+- **Redux**: For auth state management, along with redux-thunk and redux-persist, to ensure persistence and legible code.
 - **Material-UI (MUI)**: A popular React UI framework.
 
 ## Features
