@@ -72,7 +72,7 @@ const Login = () => {
               setSnackbarOpen(true);
               setTimeout(() => {
                   navigate("/");
-              }, 1000);
+              }, 500);
           })
          .catch((error) => {
               console.error(

@@ -107,6 +107,7 @@ export default function TemporaryDrawer() {
   const handleLogout = async () => {
     dispatch(logout())
       .then(() => {
+        localStorage.setItem("cart", []);
         setSnackbarMessage("User logged out successfully!");
         setSnackbarType("success");
         setSnackbarOpen(true);

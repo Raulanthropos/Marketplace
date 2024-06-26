@@ -85,6 +85,7 @@ export const logout = () => async (dispatch) => {
             dispatch(setIsLoggedIn(false));
             localStorage.setItem('accessToken', null);
             localStorage.setItem('user', JSON.stringify(null));
+            window.location.reload();
         } else {
             throw new Error("Network response was not ok");
         }
