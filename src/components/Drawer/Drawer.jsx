@@ -41,8 +41,13 @@ const TypographyItem = styled(Typography)(({ theme }) => ({
 }));
 
 const LinkItem = styled(ListItemText)(({ theme }) => ({
+  width: "100%",
   color: createTheme.palette.common.marketblue,
   textDecoration: "none",
+}));
+
+const ListItemButtonStyle = styled(ListItemButton)(({ theme }) => ({
+  width: "100%",
 }));
 
 const DrawerContainerStyle = styled(Box)(({ theme }) => ({
@@ -60,7 +65,6 @@ export default function TemporaryDrawer() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
-  const baseUrl = process.env.REACT_APP_API_URL;
   const userName = JSON.parse(localStorage.getItem("user"))?.name;
   const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
   const { cart } = useCartStore();
@@ -128,24 +132,6 @@ export default function TemporaryDrawer() {
       });
   };
 
-  // const logout = async () => {
-  //   try {
-  //     const response = await fetch(`${baseUrl}/users/logout`, {
-  //       method: "POST",
-  //     });
-
-  //     if (response.ok) {
-  //       localStorage.clear();
-  //       localStorage.setItem("user", JSON.stringify(null));
-  //       window.location.href = "/";
-  //     } else {
-  //       console.error("Logout failed:", response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error("Network error:", error);
-  //   }
-  // };
-
   const list = (
     <>
       <DrawerContainerStyle
@@ -163,40 +149,40 @@ export default function TemporaryDrawer() {
               </TypographyItem>
             </ListItem>
             <ListItem key="Main" disablePadding>
-              <ListItemButton>
+              <ListItemButtonStyle>
                 <Link to="/">
                   <LinkItem primary="Main" />
                 </Link>
-              </ListItemButton>
+              </ListItemButtonStyle>
             </ListItem>
             <ListItem key="Cart" disablePadding>
-              <ListItemButton>
+              <ListItemButtonStyle>
                 <Link to="/cart">
                   <ListItemText primary="Cart" />
                 </Link>
-              </ListItemButton>
+              </ListItemButtonStyle>
             </ListItem>
             <ListItem key="Logout" disablePadding>
-              <ListItemButton onClick={handleLogout}>
+              <ListItemButtonStyle onClick={handleLogout}>
                 <ListItemText primary="Logout" />
-              </ListItemButton>
+              </ListItemButtonStyle>
             </ListItem>
           </List>
         ) : (
           <List>
             <ListItem key="Register" disablePadding>
-              <ListItemButton>
+              <ListItemButtonStyle>
                 <Link to="/register">
                   <LinkItem primary="Register" />
                 </Link>
-              </ListItemButton>
+              </ListItemButtonStyle>
             </ListItem>
             <ListItem key="Login" disablePadding>
-              <ListItemButton>
+              <ListItemButtonStyle>
                 <Link to="/login">
                   <LinkItem primary="Login" />
                 </Link>
-              </ListItemButton>
+              </ListItemButtonStyle>
             </ListItem>
           </List>
         )}

@@ -58,7 +58,6 @@ const Login = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
 
-  // Use useDispatch to get the dispatch function
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

@@ -212,6 +212,7 @@ const Main = () => {
     setOpen(false);
     setSelectedIndex(null);
     setRate(null);
+    setComment("");
   };
 
   const { cart } = useCartStore();
@@ -270,9 +271,7 @@ const Main = () => {
   };
 
   const postReview = async (product) => {
-    const storedAuth = localStorage.getItem("auth");
-    const token = storedAuth ? JSON.parse(storedAuth).accessToken : null;
-
+    const token = localStorage.getItem("accessToken");
     if (!token) {
       console.error("No token found");
       return;
@@ -285,7 +284,7 @@ const Main = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Attach token with Bearer prefix
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             comment,
@@ -299,13 +298,15 @@ const Main = () => {
       }
 
       const data = await response.json();
+      console.log("Review data", data)
       setSnackbarMessage("Review was posted successfully!");
       setSnackbarType("success");
       setSnackbarOpen(true);
       setTimeout(() => {
         setOpen(false);
-      }, 1000);
-      return data;
+        setIsLoading(false)
+        return data;
+      }, 1500);
     } catch (error) {
       setSnackbarMessage("Error posting review!");
       setSnackbarType("error");
@@ -313,6 +314,12 @@ const Main = () => {
       console.error("Error posting review:", error);
       // Handle error as needed
     }
+  };
+
+  const handleReview = (e) => {
+    e.preventDefault();
+    setIsLoading(true)
+    postReview(productData);
   };
 
   const openReviewModal = (product) => {
@@ -479,8 +486,7 @@ const Main = () => {
         </CardItem>
       </ModalContent>
       <ModalReviews open={open}>
-        <FormItem>
-          <form
+        <FormItem
             onSubmit={(e) => e.preventDefault()}
             style={{
               width: "100%",
@@ -509,9 +515,9 @@ const Main = () => {
               onChange={(e) => setComment(e.target.value)}
               placeholder="0/200"
               maxLength="200"
-              rows="10"
+              rows="5"
               required
-              style={{ width: "100%", height: "100%", marginBottom: "10px" }}
+              style={{ width: "80%", height: "20%", marginBottom: "10px" }}
             />
             <Grid
               container
@@ -541,11 +547,10 @@ const Main = () => {
             </Grid>
             <ButtonAddItem
               type="submit"
-              onClick={() => postReview(productData)}
+              onClick={handleReview}
             >
-              Submit
+              {isLoading ? <CircularProgress color="inherit" /> : "Submit"}
             </ButtonAddItem>
-          </form>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}

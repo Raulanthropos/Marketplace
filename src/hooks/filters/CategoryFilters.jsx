@@ -23,6 +23,9 @@ const CategoryFilter = ({ onSelectCategory }) => {
         <MenuItem value="">All</MenuItem>
         <MenuItem value="Clothing">Clothing</MenuItem>
         <MenuItem value="Electronics">Electronics</MenuItem>
+        <MenuItem value="Toys">Toys</MenuItem>
+        <MenuItem value="Household Items">Household Items</MenuItem>
+        <MenuItem value="Gadgets">Gadgets</MenuItem>
       </Select>
     </StyledFormControl>
   );
