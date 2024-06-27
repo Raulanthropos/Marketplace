@@ -59,7 +59,7 @@ function Footer() {
   return (
     <FooterContainer>
       <ContentWrapper container justify="center">
-        <Title>"Garments and Electronics" was created by Ioannis Psychias.</Title>
+        <Title>This eshop project was created by Ioannis Psychias.</Title>
         <List>
           <ListItem>
             <a href={`mailto:${process.env.REACT_APP_EMAIL}`}>Email</a>

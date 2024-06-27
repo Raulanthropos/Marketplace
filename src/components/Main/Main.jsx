@@ -334,7 +334,7 @@ const Main = () => {
   return (
     <>
       <Title>Marketplace</Title>
-      <Subtitle>Garments and electronics</Subtitle>
+      <Subtitle>Fullstack Eshop Project</Subtitle>
       <CategoryFilter onSelectCategory={handleCategoryChange} />
       <SortOptions onSelectSort={handleSortChange} />
       <MainContainer justifyContent="center" alignItems="center">
