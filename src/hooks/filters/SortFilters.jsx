@@ -1,11 +1,12 @@
 import React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-
+import createTheme from '../../theme';
 import { styled } from "@mui/material/styles";
 
 const StyledFormControl = styled(FormControl)({
   minWidth: 120,
   margin: "0 10px",
+  backgroundColor: createTheme.palette.common.marketwhite,
 });
 
 const SortOptions = ({ onSelectSort }) => {

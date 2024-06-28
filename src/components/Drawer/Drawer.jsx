@@ -29,31 +29,55 @@ const MainContainer = styled(Grid)(() => ({
   position: "fixed",
   width: "100%",
   marginTop: "-72px",
+  maxHeight: "72px",
   zIndex: 100,
 }));
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
   display: "flex",
+  flexWrap: "nowrap",
   justifyContent: "center",
   alignItems: "center",
   marginBottom: theme.spacing(1),
   marginTop: theme.spacing(1),
 }));
 
-const LinkItem = styled(ListItemText)(({ theme }) => ({
+const LinkItem = styled(Link)(({ theme }) => ({
   width: "100%",
-  color: createTheme.palette.common.marketblue,
+  color: createTheme.palette.common.marketblack,
   textDecoration: "none",
 }));
 
-const ListItemButtonStyle = styled(ListItemButton)(({ theme }) => ({
+const ListStyle = styled(List)(({ theme }) => ({
   width: "100%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  borderRadius: theme.spacing(1),
+  margin: theme.spacing(1),
+  // backgroundColor: createTheme.palette.common.marketwhite,
+}));
+
+const ListItemButtonStyle = styled(ListItemButton)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  borderRadius: theme.spacing(1),
+  margin: 0,
+  // backgroundColor: createTheme.palette.common.marketwhite,
+}));
+
+const ListItemTextStyle = styled(ListItemText)(({ theme }) => ({
+  textDecoration: "none",
+  color: "inherit",
 }));
 
 const DrawerContainerStyle = styled(Box)(({ theme }) => ({
   padding: "1rem",
-  backgroundColor: createTheme.palette.common.marketlightgrey,
-  color: createTheme.palette.common.marketblue,
+  backgroundImage: `url("https://images.pexels.com/photos/3799821/pexels-photo-3799821.jpeg")`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  color: createTheme.palette.common.marketwhite,
   display: "flex",
   flexDirection: "column",
   justifyContent: "flex-start",
@@ -141,51 +165,38 @@ export default function TemporaryDrawer() {
         sx={{ width: screenWidth <= 600 ? dynamicWidth : drawerWidth }}
       >
         <Divider />
-        {isLoggedIn ? (
           <List>
             <ListItem key={userName} disablePadding>
               <TypographyItem variant="h6">
-                Welcome back, {userName}!
+                Categories
               </TypographyItem>
             </ListItem>
-            <ListItem key="Main" disablePadding>
+            <ListItem key="Clothing" disablePadding>
               <ListItemButtonStyle>
-                <Link to="/">
-                  <LinkItem primary="Main" />
-                </Link>
+                  <ListItemTextStyle primary="Clothing" />
               </ListItemButtonStyle>
             </ListItem>
-            <ListItem key="Cart" disablePadding>
+            <ListItem key="Electronics" disablePadding>
               <ListItemButtonStyle>
-                <Link to="/cart">
-                  <ListItemText primary="Cart" />
-                </Link>
+                  <ListItemTextStyle primary="Electronics" />
               </ListItemButtonStyle>
             </ListItem>
-            <ListItem key="Logout" disablePadding>
-              <ListItemButtonStyle onClick={handleLogout}>
-                <ListItemText primary="Logout" />
+            <ListItem key="Toys" disablePadding>
+            <ListItemButtonStyle>
+                <ListItemTextStyle primary="Toys" />
+              </ListItemButtonStyle>
+            </ListItem>
+            <ListItem key="Household Items" disablePadding>
+            <ListItemButtonStyle>
+                <ListItemTextStyle primary="Household Items" />
+              </ListItemButtonStyle>
+            </ListItem>
+            <ListItem key="Gadgets" disablePadding>
+            <ListItemButtonStyle>
+                <ListItemTextStyle primary="Gadgets" />
               </ListItemButtonStyle>
             </ListItem>
           </List>
-        ) : (
-          <List>
-            <ListItem key="Register" disablePadding>
-              <ListItemButtonStyle>
-                <Link to="/register">
-                  <LinkItem primary="Register" />
-                </Link>
-              </ListItemButtonStyle>
-            </ListItem>
-            <ListItem key="Login" disablePadding>
-              <ListItemButtonStyle>
-                <Link to="/login">
-                  <LinkItem primary="Login" />
-                </Link>
-              </ListItemButtonStyle>
-            </ListItem>
-          </List>
-        )}
       </DrawerContainerStyle>
     </>
   );
@@ -197,21 +208,13 @@ export default function TemporaryDrawer() {
         <Button onClick={toggleDrawer(true)}>
           <MenuRoundedIcon />
         </Button>
-
-        <TypographyItem>
-          Cart Items: ({cart.reduce((total, item) => total + item.quantity, 0)})
-          <ShoppingCartOutlined
-            sx={{ marginLeft: "10px", cursor: "pointer" }}
-            onClick={() => navigate("/cart")}
-          />
-        </TypographyItem>
         <Drawer anchor="left" open={isDrawerOpen}>
           <IconButton
             style={{
-              position: "absolute", // Adjust the position as needed
-              right: "5px", // Right offset
-              top: "5px", // Top offset
-              color: "grey", // Icon color, you can customize it
+              position: "absolute",
+              right: "10px",
+              top: "10px",
+              color: "grey",
             }}
             onClick={toggleDrawer(false)}
           >
@@ -219,6 +222,65 @@ export default function TemporaryDrawer() {
           </IconButton>
           {list}
         </Drawer>
+
+        <Grid>
+          {isLoggedIn ? (
+            <>
+              <ListStyle>
+                {/* <ListItem key={userName} disablePadding>
+                <TypographyItem variant="h6">
+                  Welcome back, {userName}!
+                </TypographyItem>
+              </ListItem> */}
+                <ListItem key="Main" disablePadding>
+                  <ListItemButtonStyle>
+                    <LinkItem to="/">
+                      <ListItemTextStyle primary="Main" />
+                    </LinkItem>
+                  </ListItemButtonStyle>
+                </ListItem>
+                <ListItem key="Cart" disablePadding>
+                  <ListItemButtonStyle>
+                    <LinkItem to="/cart">
+                      <ListItemTextStyle primary="Cart" />
+                    </LinkItem>
+                  </ListItemButtonStyle>
+                </ListItem>
+                <ListItem key="Logout" disablePadding>
+                  <ListItemButtonStyle onClick={handleLogout}>
+                    <ListItemTextStyle primary="Logout" />
+                  </ListItemButtonStyle>
+                </ListItem>
+                <ListItem key="CartItems" disablePadding>
+                  <TypographyItem>
+                    ({cart.reduce((total, item) => total + item.quantity, 0)})
+                    <ShoppingCartOutlined
+                      sx={{ marginLeft: "10px", cursor: "pointer" }}
+                      onClick={() => navigate("/cart")}
+                    />
+                  </TypographyItem>
+                </ListItem>
+              </ListStyle>
+            </>
+          ) : (
+            <ListStyle>
+              <ListItem key="Register" disablePadding>
+                <ListItemButtonStyle>
+                  <LinkItem to="/register">
+                    <ListItemTextStyle primary="Register" />
+                  </LinkItem>
+                </ListItemButtonStyle>
+              </ListItem>
+              <ListItem key="Login" disablePadding>
+                <ListItemButtonStyle>
+                  <LinkItem to="/login">
+                    <ListItemTextStyle primary="Login" />
+                  </LinkItem>
+                </ListItemButtonStyle>
+              </ListItem>
+            </ListStyle>
+          )}
+        </Grid>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
