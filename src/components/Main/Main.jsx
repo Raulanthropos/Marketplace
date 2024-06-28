@@ -15,7 +15,7 @@ import {
 import { Modal } from "@mui/material";
 import useCartStore from "../../store/Cart";
 import createTheme from "../../theme";
-import { ShoppingCart } from "@mui/icons-material";
+import { ShoppingCart, Details, Reviews } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
@@ -23,14 +23,41 @@ import { useSelector } from "react-redux";
 import CategoryFilter from "../../hooks/filters/CategoryFilters";
 import SortOptions from "../../hooks/filters/SortFilters";
 
+const MainGrid = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  margin: 0,
+  backgroundImage: `url("https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg")`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+}));
+
+const FilteringGrid = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  // width: "100%",
+  margin: theme.spacing(1),
+}));
 const MainContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.primary,
   color: theme.palette.secondary,
   padding: "1rem",
   minHeight: "calc(100vh - 3rem)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+}));
+
+const HeadContainer = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  margin: theme.spacing(1),
 }));
 
 const Title = styled("h1")(({ theme }) => ({
@@ -45,9 +72,23 @@ const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  gap: theme.spacing(4),
 }));
 
 const CardItem = styled(Card)(({ theme }) => ({
+  maxWidth: 300,
+  width: "100%",
+  height: "100%",
+  margin: theme.spacing(1),
+  backgroundColor: createTheme.palette.secondary,
+  color: createTheme.palette.primary,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+}));
+
+const ReviewCardItem = styled(Card)(({ theme }) => ({
   maxWidth: 600,
   width: "100%",
   height: "100%",
@@ -140,7 +181,18 @@ const ModalReviews = styled(Modal)(({ theme }) => ({
   margin: "auto",
 }));
 
+const ButtonContainer = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  margin: theme.spacing(1),
+  gap: theme.spacing(1),
+}));
+
 const ButtonItem = styled(Button)(() => ({
+  width: 64,
+  height: 36,
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
   backgroundColor: createTheme.palette.common.marketdarkblue,
@@ -152,6 +204,8 @@ const ButtonItem = styled(Button)(() => ({
 }));
 
 const ButtonReviewItem = styled(Button)(() => ({
+  width: 64,
+  height: 36,
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
   backgroundColor: createTheme.palette.common.marketblue,
@@ -163,6 +217,8 @@ const ButtonReviewItem = styled(Button)(() => ({
 }));
 
 const ButtonAddItem = styled(Button)(() => ({
+  width: 64,
+  height: 36,
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
   backgroundColor: createTheme.palette.common.marketblue,
@@ -240,11 +296,10 @@ const Main = () => {
         setIsLoading(false);
       }
     };
-  
+
     fetchProducts();
     //eslint-disable-next-line
   }, [selectedCategory, sortOrder]);
-  
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
@@ -298,13 +353,13 @@ const Main = () => {
       }
 
       const data = await response.json();
-      console.log("Review data", data)
+      console.log("Review data", data);
       setSnackbarMessage("Review was posted successfully!");
       setSnackbarType("success");
       setSnackbarOpen(true);
       setTimeout(() => {
         setOpen(false);
-        setIsLoading(false)
+        setIsLoading(false);
         return data;
       }, 1500);
     } catch (error) {
@@ -318,7 +373,7 @@ const Main = () => {
 
   const handleReview = (e) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     postReview(productData);
   };
 
@@ -332,11 +387,15 @@ const Main = () => {
   };
 
   return (
-    <>
-      <Title>Marketplace</Title>
-      <Subtitle>Fullstack Eshop Project</Subtitle>
-      <CategoryFilter onSelectCategory={handleCategoryChange} />
-      <SortOptions onSelectSort={handleSortChange} />
+    <MainGrid>
+      <HeadContainer>
+        <Title>Marketplace</Title>
+        <Subtitle>Fullstack Eshop Project</Subtitle>
+        <FilteringGrid>
+          <CategoryFilter onSelectCategory={handleCategoryChange} />
+          <SortOptions onSelectSort={handleSortChange} />
+        </FilteringGrid>
+      </HeadContainer>
       <MainContainer justifyContent="center" alignItems="center">
         <CardContainer container spacing={2} justify="center">
           {isLoading ? (
@@ -361,57 +420,61 @@ const Main = () => {
                       <TypographyItem variant="body2" color="textSecondary">
                         {product.description}
                       </TypographyItem>
-                      <ButtonItem onClick={() => fetchProduct(product)}>
-                        View Details
-                      </ButtonItem>
-                      {isLoggedIn ? (
-                        <ButtonReviewItem
-                          onClick={() => openReviewModal(product)}
-                        >
-                          Leave a review!
-                        </ButtonReviewItem>
-                      ) : (
-                        <TypographyItem variant="body2">
-                          Sign in to leave a review
-                        </TypographyItem>
-                      )}
-                      <CardActions>
+                      <ButtonContainer>
                         {isLoggedIn ? (
-                          quantity > 0 ? (
-                            <>
-                              <Button
-                                size="small"
-                                color="primary"
-                                variant="contained"
-                                onClick={() => increaseQuantity(product)}
-                              >
-                                +
-                              </Button>
-                              <Typography variant="h6">{quantity}</Typography>
-                              <Button
-                                size="small"
-                                color="primary"
-                                variant="contained"
-                                onClick={() => decreaseQuantity(product)}
-                              >
-                                -
-                              </Button>
-                            </>
-                          ) : (
-                            <ButtonAddItem
-                              size="small"
-                              color="primary"
-                              onClick={() => addToCart(product)}
+                          <>
+                            <ButtonItem onClick={() => fetchProduct(product)}>
+                              <Details />
+                            </ButtonItem>
+                            <ButtonReviewItem
+                              onClick={() => openReviewModal(product)}
                             >
-                              Add to Cart <ShoppingCart />
-                            </ButtonAddItem>
-                          )
+                              <Reviews />
+                            </ButtonReviewItem>
+                            {quantity > 0 ? (
+                              <CardActions>
+                                <ButtonAddItem
+                                  size="small"
+                                  color="primary"
+                                  variant="contained"
+                                  onClick={() => increaseQuantity(product)}
+                                >
+                                  +
+                                </ButtonAddItem>
+                                <Typography variant="h6">{quantity}</Typography>
+                                <ButtonAddItem
+                                  size="small"
+                                  color="primary"
+                                  variant="contained"
+                                  onClick={() => decreaseQuantity(product)}
+                                >
+                                  -
+                                </ButtonAddItem>
+                              </CardActions>
+                            ) : (
+                              <ButtonAddItem
+                                size="small"
+                                color="primary"
+                                onClick={() => addToCart(product)}
+                              >
+                                <ShoppingCart />
+                              </ButtonAddItem>
+                            )}
+                          </>
                         ) : (
-                          <TypographyItem variant="body2">
-                            Sign in to add to cart
-                          </TypographyItem>
+                          <>
+                            <ButtonItem onClick={() => fetchProduct(product)}>
+                              <Details />
+                            </ButtonItem>
+                            <ButtonReviewItem disabled>
+                              <Reviews />
+                            </ButtonReviewItem>
+                            <ButtonAddItem disabled>
+                              <ShoppingCart />
+                            </ButtonAddItem>
+                          </>
                         )}
-                      </CardActions>
+                      </ButtonContainer>
 
                       <TypographyItem variant="h5">
                         {product.price}$
@@ -429,7 +492,7 @@ const Main = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <CardItem>
+        <ReviewCardItem>
           <IconButton
             style={{
               position: "absolute",
@@ -483,74 +546,71 @@ const Main = () => {
               );
             })}
           </CardContentItem>
-        </CardItem>
+        </ReviewCardItem>
       </ModalContent>
       <ModalReviews open={open}>
         <FormItem
-            onSubmit={(e) => e.preventDefault()}
+          onSubmit={(e) => e.preventDefault()}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <IconButton
             style={{
-              width: "100%",
-              height: "100%",
+              position: "absolute",
+              right: "10px",
+              top: "10px",
+              color: "white",
+            }}
+            onClick={() => handleClose()}
+          >
+            <CloseIcon />
+          </IconButton>
+          <TypographyItem variant="h6">Leave a review for</TypographyItem>
+          <TypographyItem variant="h5">{productData.name}</TypographyItem>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="0/200"
+            maxLength="200"
+            rows="5"
+            required
+            style={{ width: "80%", height: "20%", marginBottom: "10px" }}
+          />
+          <Grid
+            container
+            style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              flexDirection: "column",
+              flexWrap: "nowrap",
             }}
           >
-            <IconButton
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "10px",
-                color: "white",
-              }}
-              onClick={() => handleClose()}
-            >
-              <CloseIcon />
-            </IconButton>
-            <TypographyItem variant="h6">Leave a review for</TypographyItem>
-            <TypographyItem variant="h5">{productData.name}</TypographyItem>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="0/200"
-              maxLength="200"
-              rows="5"
-              required
-              style={{ width: "80%", height: "20%", marginBottom: "10px" }}
-            />
-            <Grid
-              container
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexWrap: "nowrap",
-              }}
-            >
-              {[...Array(5)].map((_, index) => {
-                const isSelected =
-                  selectedIndex !== null && index <= selectedIndex;
+            {[...Array(5)].map((_, index) => {
+              const isSelected =
+                selectedIndex !== null && index <= selectedIndex;
 
-                return (
-                  <Star
-                    key={index}
-                    className={`${
-                      isSelected ? "star-image-important" : "star-image-white"
-                    }`}
-                    onClick={() => handleClick(index)}
-                  >
-                    ★
-                  </Star>
-                );
-              })}
-            </Grid>
-            <ButtonAddItem
-              type="submit"
-              onClick={handleReview}
-            >
-              {isLoading ? <CircularProgress color="inherit" /> : "Submit"}
-            </ButtonAddItem>
+              return (
+                <Star
+                  key={index}
+                  className={`${
+                    isSelected ? "star-image-important" : "star-image-white"
+                  }`}
+                  onClick={() => handleClick(index)}
+                >
+                  ★
+                </Star>
+              );
+            })}
+          </Grid>
+          <ButtonAddItem type="submit" onClick={handleReview}>
+            {isLoading ? <CircularProgress color="inherit" /> : "Submit"}
+          </ButtonAddItem>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}
@@ -573,7 +633,7 @@ const Main = () => {
           </Snackbar>
         </FormItem>
       </ModalReviews>
-    </>
+    </MainGrid>
   );
 };
 
