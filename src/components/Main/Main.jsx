@@ -30,9 +30,9 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   margin: 0,
-  backgroundImage: `url("https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg")`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
+  // backgroundImage: `url("https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg")`,
+  // backgroundSize: "cover",
+  // backgroundPosition: "center",
 }));
 
 const FilteringGrid = styled(Grid)(({ theme }) => ({

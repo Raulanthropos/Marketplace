@@ -186,6 +186,16 @@ export default function TemporaryDrawer() {
                 <ListItemTextStyle primary="Toys" />
               </ListItemButtonStyle>
             </ListItem>
+            <ListItem key="Household Items" disablePadding>
+            <ListItemButtonStyle>
+                <ListItemTextStyle primary="Household Items" />
+              </ListItemButtonStyle>
+            </ListItem>
+            <ListItem key="Gadgets" disablePadding>
+            <ListItemButtonStyle>
+                <ListItemTextStyle primary="Gadgets" />
+              </ListItemButtonStyle>
+            </ListItem>
           </List>
       </DrawerContainerStyle>
     </>
