@@ -205,9 +205,9 @@ export default function TemporaryDrawer() {
     <>
       <div style={{ height: "72px" }}></div>
       <MainContainer>
-        <Button onClick={toggleDrawer(true)}>
+        {/* <Button onClick={toggleDrawer(true)}>
           <MenuRoundedIcon />
-        </Button>
+        </Button> */}
         <Drawer anchor="left" open={isDrawerOpen}>
           <IconButton
             style={{
