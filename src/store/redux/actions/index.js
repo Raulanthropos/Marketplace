@@ -1,3 +1,4 @@
+import useCartStore from "../../Cart";
 export const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN"
 export const SET_IS_LOGGED_IN = "SET_IS_LOGGED_IN"
 export const SET_USER = "SET_USER"
@@ -85,7 +86,8 @@ export const logout = () => async (dispatch) => {
             dispatch(setIsLoggedIn(false));
             localStorage.setItem('accessToken', null);
             localStorage.setItem('user', JSON.stringify(null));
-            window.location.reload();
+            const resetCart = useCartStore.getState().resetCart;
+            resetCart();
         } else {
             throw new Error("Network response was not ok");
         }
