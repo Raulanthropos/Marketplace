@@ -6,6 +6,7 @@ const useCartStore = create(
     persist(
       (set) => ({
         cart: [],
+        resetCart: () => set(() => ({ cart: [] })),
         setCart: (value) => set({ cart: value }),
         addToCart: (productToAdd) => {
           set((state) => {

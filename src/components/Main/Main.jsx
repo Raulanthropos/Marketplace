@@ -30,9 +30,6 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   margin: 0,
-  // backgroundImage: `url("https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg")`,
-  // backgroundSize: "cover",
-  // backgroundPosition: "center",
 }));
 
 const FilteringGrid = styled(Grid)(({ theme }) => ({
@@ -58,6 +55,9 @@ const HeadContainer = styled(Grid)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   margin: theme.spacing(1),
+  backgroundImage: `url("https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg")`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
 }));
 
 const Title = styled("h1")(({ theme }) => ({
@@ -76,7 +76,7 @@ const CardContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const CardItem = styled(Card)(({ theme }) => ({
-  maxWidth: 300,
+  maxWidth: 600,
   width: "100%",
   height: "100%",
   margin: theme.spacing(1),
@@ -86,6 +86,8 @@ const CardItem = styled(Card)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  // overflowY: "scroll",
+  // flexShrink: 1,
 }));
 
 const ReviewCardItem = styled(Card)(({ theme }) => ({
@@ -117,8 +119,8 @@ const FormItem = styled("form")(({ theme }) => ({
   margin: theme.spacing(1),
   backgroundColor: createTheme.palette.secondary,
   color: createTheme.palette.primary,
-  overflow: "hidden",
-  flexShrink: 1,
+  // overflow: "hidden",
+  // flexShrink: 1,
 }));
 
 const CardContentItem = styled(CardContent)(({ theme }) => ({
@@ -396,15 +398,14 @@ const Main = () => {
           <SortOptions onSelectSort={handleSortChange} />
         </FilteringGrid>
       </HeadContainer>
-      <MainContainer justifyContent="center" alignItems="center">
-        <CardContainer container spacing={2} justify="center">
+      <MainContainer container spacing={2}>
+        <CardContainer container spacing={2} justifyContent="center">
           {isLoading ? (
             <CircularProgress />
           ) : (
             productsData?.map((product) => {
               const cartItem = cart.find((item) => item._id === product._id);
               const quantity = cartItem ? cartItem.quantity : 0;
-
               return (
                 <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
                   <CardItem>
