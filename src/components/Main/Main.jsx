@@ -205,6 +205,15 @@ const ButtonItem = styled(Button)(() => ({
   },
 }));
 
+const PaginationContainer = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  margin: theme.spacing(1),
+  gap: theme.spacing(1),
+}));
+
 const ButtonReviewItem = styled(Button)(() => ({
   width: 64,
   height: 36,
@@ -218,7 +227,7 @@ const ButtonReviewItem = styled(Button)(() => ({
   },
 }));
 
-const ButtonAddItem = styled(Button)(() => ({
+const ButtonAddItem = styled(Button)(({ theme }) => ({
   width: 64,
   height: 36,
   marginTop: createTheme.spacing(2),
@@ -260,6 +269,9 @@ const Main = () => {
   const [snackbarType, setSnackbarType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOrder, setSortOrder] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(9); // Adjust based on your preference
+  const [totalPages, setTotalPages] = useState(0);
 
   const handleClick = (index) => {
     setSelectedIndex(index);
@@ -285,13 +297,14 @@ const Main = () => {
   const baseUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProducts = async (page = 1) => {
       try {
         setIsLoading(true);
-        const queryString = `?category=${selectedCategory}&sortBy=price&sortOrder=${sortOrder}`;
+        const queryString = `?category=${selectedCategory}&sortBy=price&sortOrder=${sortOrder}&page=${page}`;
         const response = await fetch(`${baseUrl}/products${queryString}`);
         const data = await response.json();
         setProductsData(data.products);
+        setTotalPages(data.totalPages); // Assuming your API returns total pages
       } catch (error) {
         console.error(error);
       } finally {
@@ -303,8 +316,20 @@ const Main = () => {
     //eslint-disable-next-line
   }, [selectedCategory, sortOrder]);
 
+  useEffect(() => {
+    const totalItems = productsData?.length;
+    const pages = Math.ceil(totalItems / itemsPerPage);
+    setTotalPages(pages);
+    //eslint-disable-next-line
+  }, [productsData]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = productsData?.slice(indexOfFirstItem, indexOfLastItem);
+
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
+    setCurrentPage(1); // Reset to first page
   };
 
   const handleSortChange = (order) => {
@@ -403,7 +428,7 @@ const Main = () => {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            productsData?.map((product) => {
+            currentItems?.map((product) => {
               const cartItem = cart.find((item) => item._id === product._id);
               const quantity = cartItem ? cartItem.quantity : 0;
               return (
@@ -439,6 +464,7 @@ const Main = () => {
                                   color="primary"
                                   variant="contained"
                                   onClick={() => increaseQuantity(product)}
+                                  sx={{ p: 0 }}
                                 >
                                   +
                                 </ButtonAddItem>
@@ -448,6 +474,7 @@ const Main = () => {
                                   color="primary"
                                   variant="contained"
                                   onClick={() => decreaseQuantity(product)}
+                                  sx={{ p: 0 }}
                                 >
                                   -
                                 </ButtonAddItem>
@@ -487,6 +514,27 @@ const Main = () => {
             })
           )}
         </CardContainer>
+        <PaginationContainer>
+          <ButtonItem
+            onClick={() =>
+              setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1))
+            }
+            disabled={currentPage === 1}
+          >
+            Previous
+          </ButtonItem>
+          <span>{currentPage}</span>
+          <ButtonItem
+            onClick={() =>
+              setCurrentPage((prevPage) =>
+                prevPage < totalPages ? prevPage + 1 : totalPages
+              )
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </ButtonItem>
+        </PaginationContainer>
       </MainContainer>
       <ModalContent
         open={buttonClicked}
