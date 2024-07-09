@@ -7,6 +7,7 @@ import Main from "./components/Main/Main.jsx";
 import Register from "./components/Register/Register.jsx";
 import Login from "./components/Login/Login.jsx";
 import Cart from "./components/Cart/Cart.jsx";
+import NotFound from "./components/NotFound/NotFound.jsx";
 // import Navbar from "./components/Navbar/Navbar.jsx";
 // import Drawer from "./components/Drawer/Drawer.jsx";
 
@@ -21,6 +22,7 @@ function App() {
             <Route exact path="/register" element={<Register />} />
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/cart" element={<Cart />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <Footer />

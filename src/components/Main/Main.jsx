@@ -22,6 +22,7 @@ import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import CategoryFilter from "../../hooks/filters/CategoryFilters";
 import SortOptions from "../../hooks/filters/SortFilters";
+import { useTheme } from "@mui/material/styles";
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -70,9 +71,8 @@ const Subtitle = styled("h2")(({ theme }) => ({
 
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
-  justifyContent: "center",
   alignItems: "center",
-  gap: theme.spacing(4),
+  // gap: theme.spacing(4),
 }));
 
 const CardItem = styled(Card)(({ theme }) => ({
@@ -192,12 +192,47 @@ const ButtonContainer = styled(Grid)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
+const CardActionsContainer = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  // flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  // margin: 0,
+  // padding: 0,
+}));
+
 const ButtonItem = styled(Button)(() => ({
   width: 64,
   height: 36,
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
   backgroundColor: createTheme.palette.common.marketdarkblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketblack,
+    backgroundColor: createTheme.palette.common.marketlightgrey,
+  },
+}));
+
+const ButtonQuantityItem = styled(Button)(() => ({
+  width: 64,
+  height: 36,
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketdarkblue,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketblack,
+    backgroundColor: createTheme.palette.common.marketlightgrey,
+  },
+}));
+
+const ButtonPaginationItem = styled(Button)(() => ({
+  width: 96,
+  height: 36,
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketblack,
   color: createTheme.palette.common.marketwhite,
   "&:hover": {
     color: createTheme.palette.common.marketblack,
@@ -270,8 +305,39 @@ const Main = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(9); // Adjust based on your preference
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalPages, setTotalPages] = useState(0);
+  const theme = useTheme();
+  const xsBreakpoint = 600;
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    window.innerWidth <= xsBreakpoint
+  );
+
+  // Debounce function to limit updates
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  useEffect(() => {
+    // Handler to call on window resize
+    const handleResize = debounce(() => {
+      setIsSmallScreen(window.innerWidth <= xsBreakpoint);
+    }, 250); // Adjust debounce time as needed
+
+    // Set up resize event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleClick = (index) => {
     setSelectedIndex(index);
@@ -424,15 +490,26 @@ const Main = () => {
         </FilteringGrid>
       </HeadContainer>
       <MainContainer container spacing={2}>
-        <CardContainer container spacing={2} justifyContent="center">
-          {isLoading ? (
+        {isLoading ? (
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            style={{ minHeight: "100vh" }}
+          >
             <CircularProgress />
-          ) : (
-            currentItems?.map((product) => {
+          </Grid>
+        ) : (
+          <CardContainer
+            container
+            spacing={2}
+            justifyContent={isSmallScreen ? "center" : "flex-start"}
+          >
+            {currentItems?.map((product) => {
               const cartItem = cart.find((item) => item._id === product._id);
               const quantity = cartItem ? cartItem.quantity : 0;
               return (
-                <Grid item xs={8} sm={6} md={4} lg={3} key={product._id}>
+                <Grid item xs={10} sm={6} md={4} lg={3} key={product._id}>
                   <CardItem>
                     <CardMediaItem
                       component="img"
@@ -458,27 +535,27 @@ const Main = () => {
                               <Reviews />
                             </ButtonReviewItem>
                             {quantity > 0 ? (
-                              <CardActions>
-                                <ButtonAddItem
+                              <CardActionsContainer
+                                // flexDirection={isSmallScreen ? "column" : "row"}
+                              >
+                                <ButtonQuantityItem
                                   size="small"
                                   color="primary"
                                   variant="contained"
                                   onClick={() => increaseQuantity(product)}
-                                  sx={{ p: 0 }}
                                 >
                                   +
-                                </ButtonAddItem>
+                                </ButtonQuantityItem>
                                 <Typography variant="h6">{quantity}</Typography>
-                                <ButtonAddItem
+                                <ButtonQuantityItem
                                   size="small"
                                   color="primary"
                                   variant="contained"
                                   onClick={() => decreaseQuantity(product)}
-                                  sx={{ p: 0 }}
                                 >
                                   -
-                                </ButtonAddItem>
-                              </CardActions>
+                                </ButtonQuantityItem>
+                              </CardActionsContainer>
                             ) : (
                               <ButtonAddItem
                                 size="small"
@@ -503,7 +580,6 @@ const Main = () => {
                           </>
                         )}
                       </ButtonContainer>
-
                       <TypographyItem variant="h5">
                         {product.price}$
                       </TypographyItem>
@@ -511,20 +587,20 @@ const Main = () => {
                   </CardItem>
                 </Grid>
               );
-            })
-          )}
-        </CardContainer>
+            })}
+          </CardContainer>
+        )}
         <PaginationContainer>
-          <ButtonItem
+          <ButtonPaginationItem
             onClick={() =>
               setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1))
             }
             disabled={currentPage === 1}
           >
             Previous
-          </ButtonItem>
+          </ButtonPaginationItem>
           <span>{currentPage}</span>
-          <ButtonItem
+          <ButtonPaginationItem
             onClick={() =>
               setCurrentPage((prevPage) =>
                 prevPage < totalPages ? prevPage + 1 : totalPages
@@ -533,7 +609,7 @@ const Main = () => {
             disabled={currentPage === totalPages}
           >
             Next
-          </ButtonItem>
+          </ButtonPaginationItem>
         </PaginationContainer>
       </MainContainer>
       <ModalContent
