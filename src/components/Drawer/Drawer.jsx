@@ -24,7 +24,7 @@ const MainContainer = styled(Grid)(() => ({
   color: createTheme.palette.secondary,
   padding: "1rem",
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "flex-end",
   alignItems: "center",
   position: "fixed",
   width: "100%",
@@ -205,9 +205,11 @@ export default function TemporaryDrawer() {
     <>
       <div style={{ height: "72px" }}></div>
       <MainContainer>
-        <Button onClick={toggleDrawer(true)}>
+      {/* {console.log(screenWidth)} 
+              <Button onClick={toggleDrawer(true)}>
           <MenuRoundedIcon />
         </Button>
+      */}
         <Drawer anchor="left" open={isDrawerOpen}>
           <IconButton
             style={{
