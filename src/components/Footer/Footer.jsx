@@ -1,6 +1,9 @@
 import React from "react";
 import { Link, Grid, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import MailIcon from "@mui/icons-material/Mail";
 
 const FooterContainer = styled("footer")(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -23,8 +26,8 @@ const ContentWrapper = styled(Grid)(({ theme }) => ({
 }));
 
 const Title = styled("h5")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
 }));
 
 // const Paragraph = styled(Typography)(({ theme }) => ({
@@ -62,7 +65,9 @@ function Footer() {
         <Title>This eshop project was created by Ioannis Psychias.</Title>
         <List>
           <ListItem>
-            <a href={`mailto:${process.env.REACT_APP_EMAIL}`}>Email</a>
+            <a href={`mailto:${process.env.REACT_APP_EMAIL}`}>
+              <MailIcon />
+            </a>
           </ListItem>
           <ListItem>
             <a
@@ -70,7 +75,7 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              LinkedIn
+              <LinkedInIcon />
             </a>
           </ListItem>
           <ListItem>
@@ -79,7 +84,7 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              GitHub
+              <GitHubIcon />
             </a>
           </ListItem>
         </List>
@@ -89,3 +94,32 @@ function Footer() {
 }
 
 export default Footer;
+
+/* 
+        <div className="flex mb-5">
+          <a
+            href="https://www.github.com/Raulanthropos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl mx-3"
+          >
+            <i className="fab fa-github"></i>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/ioannis-psychias/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl mx-3"
+          >
+            <i className="fab fa-linkedin"></i>
+          </a>
+          <a
+            href="mailto:ipsichias@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl mx-3"
+          >
+            <i className="far fa-envelope"></i>
+          </a>
+        </div>
+*/

@@ -62,10 +62,11 @@ const HeadContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const Title = styled("h1")(({ theme }) => ({
-  marginBottom: theme.spacing(1),
+  marginBottom: 0,
 }));
 
 const Subtitle = styled("h2")(({ theme }) => ({
+  marginTop: 0,
   marginBottom: theme.spacing(1),
 }));
 
@@ -232,12 +233,8 @@ const ButtonPaginationItem = styled(Button)(() => ({
   height: 36,
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
-  backgroundColor: createTheme.palette.common.marketblack,
-  color: createTheme.palette.common.marketwhite,
-  "&:hover": {
-    color: createTheme.palette.common.marketblack,
-    backgroundColor: createTheme.palette.common.marketlightgrey,
-  },
+  color: createTheme.palette.common.marketgrey,
+  backgroundColor: createTheme.palette.common.marketwhite,
 }));
 
 const PaginationContainer = styled(Grid)(({ theme }) => ({
@@ -305,9 +302,8 @@ const Main = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const [totalPages, setTotalPages] = useState(0);
-  const theme = useTheme();
   const xsBreakpoint = 600;
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth <= xsBreakpoint
@@ -536,7 +532,7 @@ const Main = () => {
                             </ButtonReviewItem>
                             {quantity > 0 ? (
                               <CardActionsContainer
-                                // flexDirection={isSmallScreen ? "column" : "row"}
+                              // flexDirection={isSmallScreen ? "column" : "row"}
                               >
                                 <ButtonQuantityItem
                                   size="small"
