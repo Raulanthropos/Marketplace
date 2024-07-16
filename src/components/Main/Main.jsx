@@ -73,7 +73,6 @@ const Subtitle = styled("h2")(({ theme }) => ({
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  // gap: theme.spacing(4),
 }));
 
 const CardItem = styled(Card)(({ theme }) => ({
@@ -87,23 +86,23 @@ const CardItem = styled(Card)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  // overflowY: "scroll",
-  // flexShrink: 1,
 }));
 
 const ReviewCardItem = styled(Card)(({ theme }) => ({
   maxWidth: 600,
+  position: "relative",
   width: "100%",
-  height: "100%",
+  height: "80vh",
   margin: theme.spacing(1),
+  paddingTop: theme.spacing(2),
   backgroundColor: createTheme.palette.secondary,
   color: createTheme.palette.primary,
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   overflowY: "scroll",
-  flexShrink: 1,
+  scrollbarWidth: "thin",
 }));
 
 const CardMediaItem = styled(CardMedia)(({ theme }) => ({
@@ -120,8 +119,6 @@ const FormItem = styled("form")(({ theme }) => ({
   margin: theme.spacing(1),
   backgroundColor: createTheme.palette.secondary,
   color: createTheme.palette.primary,
-  // overflow: "hidden",
-  // flexShrink: 1,
 }));
 
 const CardContentItem = styled(CardContent)(({ theme }) => ({
@@ -135,6 +132,15 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
 
 const TypographyItem = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+}));
+
+const TypographyTitleItem = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginBottom: 0,
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -167,7 +173,8 @@ const ModalContent = styled(Modal)(({ theme }) => ({
   alignItems: "center",
   width: "80%",
   maxWidth: 400,
-  maxHeight: "auto",
+  height: "auto",
+  // maxHeight: "auto",
   margin: "auto",
 }));
 
@@ -195,11 +202,8 @@ const ButtonContainer = styled(Grid)(({ theme }) => ({
 
 const CardActionsContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
-  // flexDirection: "row",
   justifyContent: "center",
   alignItems: "center",
-  // margin: 0,
-  // padding: 0,
 }));
 
 const ButtonItem = styled(Button)(() => ({
@@ -617,27 +621,16 @@ const Main = () => {
           <IconButton
             style={{
               position: "absolute",
-              right: "30px",
-              top: "35px",
+              right: "10px",
+              top: "10px",
               color: "grey",
             }}
             onClick={() => setButtonClicked(false)}
           >
             <CloseIcon />
           </IconButton>
-          <CardMediaItem
-            component="img"
-            alt={productData.name}
-            image={productData.imageUrl}
-          />
           <CardContentItem>
-            <TypographyItem variant="h5">{productData.name}</TypographyItem>
-            <TypographyItem variant="body2" color="textSecondary">
-              {productData.description}
-            </TypographyItem>
-          </CardContentItem>
-          <CardContentItem>
-            <TypographyItem variant="h5">{productData.price}$</TypographyItem>
+            <TypographyTitleItem variant="h6">{productData.name}</TypographyTitleItem>
           </CardContentItem>
           <CardContentItem>
             {productData?.reviews?.map((review) => {
