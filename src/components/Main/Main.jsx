@@ -630,7 +630,19 @@ const Main = () => {
             <CloseIcon />
           </IconButton>
           <CardContentItem>
-            <TypographyTitleItem variant="h6">{productData.name}</TypographyTitleItem>
+            <TypographyTitleItem variant="h5">
+              {productData.name}
+            </TypographyTitleItem>
+          </CardContentItem>
+          <CardMediaItem
+            component="img"
+            alt={productData.name}
+            image={productData.imageUrl}
+          />
+          <CardContentItem>
+            <TypographyTitleItem variant="h6">
+              {productData.description}
+            </TypographyTitleItem>
           </CardContentItem>
           <CardContentItem>
             {productData?.reviews?.map((review) => {
