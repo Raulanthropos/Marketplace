@@ -1,9 +1,7 @@
 import React from "react";
 import { styled } from "@mui/system";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
 import useCartStore from "../../store/Cart";
-import { Grid } from "@mui/material";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import createTheme from "../../theme";
 
@@ -20,11 +18,9 @@ const MainContainer = styled(Grid)(({ theme }) => ({
   maxWidth: "100%",
 }));
 
-const Title = styled("h1")(({ theme }) => ({
-}));
+const Title = styled("h1")(({ theme }) => ({}));
 
-const Subtitle = styled("h2")(({ theme }) => ({
-}));
+const Subtitle = styled("h2")(({ theme }) => ({}));
 
 const CardContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -47,8 +43,7 @@ const CardContentItem = styled(CardContent)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const TypographyItem = styled(Typography)(({ theme }) => ({
-}));
+const TypographyItem = styled(Typography)(({ theme }) => ({}));
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   whiteSpace: "wrap",
@@ -56,17 +51,6 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   maxWidth: "125px",
 }));
-
-// const LinkItem = styled(Link)(({ theme }) => ({
-//   color: theme.palette.secondary,
-//   textDecoration: "none",
-// }));
-
-// const ModalContent = styled(Modal)(({ theme }) => ({
-//   backgroundColor: theme.palette.background,
-//   border: "2px solid #000",
-//   padding: theme.spacing(2, 4, 3),
-// }));
 
 const ButtonBack = styled(Button)(() => ({
   marginTop: createTheme.spacing(2),
@@ -79,61 +63,72 @@ const ButtonBack = styled(Button)(() => ({
   },
 }));
 
+const ButtonClear = styled(Button)(() => ({
+  marginTop: createTheme.spacing(2),
+  marginBottom: createTheme.spacing(2),
+  backgroundColor: createTheme.palette.common.marketred,
+  color: createTheme.palette.common.marketwhite,
+  "&:hover": {
+    color: createTheme.palette.common.marketwhite,
+    backgroundColor: createTheme.palette.common.marketblue,
+  },
+}));
+
 const Cart = () => {
   const navigate = useNavigate();
-  const { cart } = useCartStore();
+  const { cart, resetCart } = useCartStore();
   return (
     <MainContainer>
       <Title>Cart</Title>
       <Subtitle>Items in your cart:</Subtitle>
       <CardContainer>
-        {cart.map((product) => {
-          return (
-            <Card
-              key={product._id}
-              sx={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <CardContentItem>
-                {/* <CardMedia
-                  component="img"
-                  height="20"
-                  image={product.imageUrl}
-                  alt={product.title}
-                /> */}
-                <TypographyTitle variant="h5">
-                  {product.name}
-                </TypographyTitle>
-                <TypographyItem variant="h6" color="text.secondary">
-                  Category: {product.category}
-                </TypographyItem>
-                <TypographyItem variant="h6" color="text.secondary">
-                  Price: {product.price * product.quantity}$
-                </TypographyItem>
-                <TypographyItem variant="h6" color="text.secondary">
-                  Quantity: {product.quantity}
-                </TypographyItem>
-              </CardContentItem>
-            </Card>
-          );
-        })}
+        {cart.map((product) => (
+          <Card
+            key={product._id}
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <CardContentItem>
+              <TypographyTitle variant="h5">{product.name}</TypographyTitle>
+              <TypographyItem variant="h6" color="text.secondary">
+                Category: {product.category}
+              </TypographyItem>
+              <TypographyItem variant="h6" color="text.secondary">
+                Price: {product.price}
+              </TypographyItem>
+              <TypographyItem variant="h6" color="text.secondary">
+                Quantity: {product.quantity}
+              </TypographyItem>
+            </CardContentItem>
+          </Card>
+        ))}
       </CardContainer>
       <CardContainer>
         <TypographyItem>
-      Cart Items: ({cart.reduce((total, item) => total + item.quantity, 0)})
+          Cart Items: ({cart.reduce((total, item) => total + item.quantity, 0)})
         </TypographyItem>
         <TypographyItem>
-        Cart Total: {cart.reduce((total, item) => total + item.price * item.quantity, 0)}$
+          Cart Total:{" "}
+          {cart.reduce((total, item) => total + item.price * item.quantity, 0)}$
         </TypographyItem>
       </CardContainer>
       <ButtonBack variant="contained" onClick={() => navigate(`/`)}>
         Back to Main
       </ButtonBack>
+      {cart.length > 0 ? (
+        <ButtonClear variant="contained" onClick={resetCart}>
+          Clear Cart
+        </ButtonClear>
+      ) : (
+        <TypographyItem color="textSecondary">
+          The cart is empty!
+        </TypographyItem>
+      )}
     </MainContainer>
   );
 };

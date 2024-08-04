@@ -312,6 +312,7 @@ const Main = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth <= xsBreakpoint
   );
+  const userName = JSON.parse(localStorage.getItem("user"))?.name;
 
   // Debounce function to limit updates
   function debounce(func, wait) {
@@ -653,7 +654,7 @@ const Main = () => {
                 <Grid container key={review._id}>
                   <ReviewTypographyItem variant="body2" color="textSecondary">
                     <b style={{ marginRight: "0.5rem" }}>Posted By: </b>{" "}
-                    Anonymous
+                    {review.username || "Anonymous"}
                   </ReviewTypographyItem>
                   <ReviewTypographyItem variant="body2" color="textSecondary">
                     <b style={{ marginRight: "0.5rem" }}>Date Posted: </b>{" "}
