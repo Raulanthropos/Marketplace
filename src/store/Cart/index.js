@@ -12,12 +12,10 @@ const useCartStore = create(
           set((state) => {
             const productIndex = state.cart.findIndex((item) => item._id === productToAdd._id);
             if (productIndex !== -1) {
-              // Product is already in the cart, increase the quantity
               const newCart = state.cart.map((item, index) => 
                 index === productIndex ? { ...item, quantity: item.quantity + 1 } : item);
               return { cart: newCart };
             } else {
-              // Product is not in the cart, add with quantity of 1
               const newProduct = { ...productToAdd, quantity: 1 };
               return { cart: [...state.cart, newProduct] };
             }

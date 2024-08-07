@@ -5,7 +5,6 @@ import { styled } from "@mui/system";
 import Divider from "@mui/material/Divider";
 import {
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   Typography,
@@ -22,7 +21,8 @@ import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import CategoryFilter from "../../hooks/filters/CategoryFilters";
 import SortOptions from "../../hooks/filters/SortFilters";
-import { useTheme } from "@mui/material/styles";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -206,19 +206,6 @@ const CardActionsContainer = styled(Grid)(({ theme }) => ({
   alignItems: "center",
 }));
 
-const ButtonItem = styled(Button)(() => ({
-  width: 64,
-  height: 36,
-  marginTop: createTheme.spacing(2),
-  marginBottom: createTheme.spacing(2),
-  backgroundColor: createTheme.palette.common.marketdarkblue,
-  color: createTheme.palette.common.marketwhite,
-  "&:hover": {
-    color: createTheme.palette.common.marketblack,
-    backgroundColor: createTheme.palette.common.marketlightgrey,
-  },
-}));
-
 const ButtonQuantityItem = styled(Button)(() => ({
   width: 64,
   height: 36,
@@ -272,7 +259,7 @@ const ButtonAddItem = styled(Button)(({ theme }) => ({
   color: createTheme.palette.common.marketwhite,
   "&:hover": {
     color: createTheme.palette.common.marketwhite,
-    backgroundColor: createTheme.palette.common.marketmoss,
+    backgroundColor: createTheme.palette.common.marketgreen,
   },
 }));
 
@@ -312,7 +299,6 @@ const Main = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth <= xsBreakpoint
   );
-  const userName = JSON.parse(localStorage.getItem("user"))?.name;
 
   // Debounce function to limit updates
   function debounce(func, wait) {
@@ -527,9 +513,11 @@ const Main = () => {
                       <ButtonContainer>
                         {isLoggedIn ? (
                           <>
-                            <ButtonItem onClick={() => fetchProduct(product)}>
+                            <ButtonReviewItem
+                              onClick={() => fetchProduct(product)}
+                            >
                               <Details />
-                            </ButtonItem>
+                            </ButtonReviewItem>
                             <ButtonReviewItem
                               onClick={() => openReviewModal(product)}
                             >
@@ -537,7 +525,6 @@ const Main = () => {
                             </ButtonReviewItem>
                             {quantity > 0 ? (
                               <CardActionsContainer
-                              // flexDirection={isSmallScreen ? "column" : "row"}
                               >
                                 <ButtonQuantityItem
                                   size="small"
@@ -569,15 +556,27 @@ const Main = () => {
                           </>
                         ) : (
                           <>
-                            <ButtonItem onClick={() => fetchProduct(product)}>
+                            <ButtonReviewItem
+                              onClick={() => fetchProduct(product)}
+                            >
                               <Details />
-                            </ButtonItem>
-                            <ButtonReviewItem disabled>
-                              <Reviews />
                             </ButtonReviewItem>
-                            <ButtonAddItem disabled>
-                              <ShoppingCart />
-                            </ButtonAddItem>
+                            <>
+                              <Tippy content="Login to review">
+                                <div>
+                                  <ButtonReviewItem disabled>
+                                    <Reviews />
+                                  </ButtonReviewItem>
+                                </div>
+                              </Tippy>
+                              <Tippy content="Login to add to cart">
+                                <div>
+                                  <ButtonAddItem disabled>
+                                    <ShoppingCart />
+                                  </ButtonAddItem>
+                                </div>
+                              </Tippy>
+                            </>
                           </>
                         )}
                       </ButtonContainer>
@@ -699,6 +698,11 @@ const Main = () => {
             <CloseIcon />
           </IconButton>
           <TypographyItem variant="h6">Leave a review for</TypographyItem>
+          <CardMediaItem
+            component="img"
+            alt={productData.name}
+            image={productData.imageUrl}
+          />
           <TypographyItem variant="h5">{productData.name}</TypographyItem>
           <textarea
             value={comment}
