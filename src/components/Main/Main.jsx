@@ -10,6 +10,7 @@ import {
   Typography,
   Snackbar,
   SnackbarContent,
+  TextField,
 } from "@mui/material";
 import { Modal } from "@mui/material";
 import useCartStore from "../../store/Cart";
@@ -23,6 +24,7 @@ import CategoryFilter from "../../hooks/filters/CategoryFilters";
 import SortOptions from "../../hooks/filters/SortFilters";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import NumericInput from "react-numeric-input";
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -349,6 +351,21 @@ const Main = () => {
   );
   const baseUrl = process.env.REACT_APP_API_URL;
 
+  const handleQuantityChange = (product, newQuantity) => {
+    const quantity = Math.max(0, Number(newQuantity)); // Ensure the quantity is at least 0
+    const productInCart = cart.find((item) => item._id === product._id);
+
+    if (productInCart) {
+      if (quantity > productInCart.quantity) {
+        increaseQuantity(product);
+      } else if (quantity < productInCart.quantity) {
+        decreaseQuantity(product);
+      }
+    } else if (quantity > 0) {
+      addToCart(product);
+    }
+  };
+
   useEffect(() => {
     const fetchProducts = async (page = 1) => {
       try {
@@ -524,25 +541,50 @@ const Main = () => {
                               <Reviews />
                             </ButtonReviewItem>
                             {quantity > 0 ? (
-                              <CardActionsContainer
-                              >
-                                <ButtonQuantityItem
-                                  size="small"
-                                  color="primary"
-                                  variant="contained"
-                                  onClick={() => increaseQuantity(product)}
-                                >
-                                  +
-                                </ButtonQuantityItem>
-                                <Typography variant="h6">{quantity}</Typography>
-                                <ButtonQuantityItem
-                                  size="small"
-                                  color="primary"
-                                  variant="contained"
-                                  onClick={() => decreaseQuantity(product)}
-                                >
-                                  -
-                                </ButtonQuantityItem>
+                              <CardActionsContainer>
+                                <NumericInput
+                                  min={0}
+                                  value={quantity}
+                                  onChange={(value) =>
+                                    handleQuantityChange(product, value)
+                                  }
+                                  style={{
+                                    wrap: {
+                                      width: "64px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      marginTop: createTheme.spacing(2),
+                                      marginBottom: createTheme.spacing(2),
+                                    },
+                                    input: {
+                                      width: "100%",
+                                      height: "36px",
+                                      border: "1px solid #ccc",
+                                      borderRadius: "4px",
+                                      textAlign: "center",
+                                    },
+                                    "input:focus": {
+                                      borderColor:
+                                        createTheme.palette.common.marketlightgrey,
+                                    },
+                                    btnUp: {
+                                      width: "20px",
+                                      height: "16px",
+                                      lineHeight: "16px",
+                                      backgroundColor:
+                                        createTheme.palette.common.marketlightgrey,
+                                      color: "#fff",
+                                    },
+                                    btnDown: {
+                                      width: "20px",
+                                      height: "16px",
+                                      lineHeight: "16px",
+                                      backgroundColor:
+                                        createTheme.palette.common.marketlightgrey,
+                                      color: "#fff",
+                                    },
+                                  }}
+                                />
                               </CardActionsContainer>
                             ) : (
                               <ButtonAddItem
