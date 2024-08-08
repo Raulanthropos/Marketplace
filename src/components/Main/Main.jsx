@@ -17,6 +17,8 @@ import useCartStore from "../../store/Cart";
 import createTheme from "../../theme";
 import { ShoppingCart, Details, Reviews } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -24,7 +26,6 @@ import CategoryFilter from "../../hooks/filters/CategoryFilters";
 import SortOptions from "../../hooks/filters/SortFilters";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import NumericInput from "react-numeric-input";
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -105,6 +106,34 @@ const ReviewCardItem = styled(Card)(({ theme }) => ({
   alignItems: "center",
   overflowY: "scroll",
   scrollbarWidth: "thin",
+}));
+
+const TheTextField = styled(TextField)(({ theme }) => ({
+  "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+    {
+      "-webkit-appearance": "none",
+      margin: 0,
+    },
+  "& input[type=number]": {
+    "-moz-appearance": "textfield", // Firefox
+  },
+}));
+
+const NumericInputContainer = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  width: "100px",
+});
+
+const NumericButton = styled(IconButton)(({ theme }) => ({
+  padding: "0",
+  width: "32px",
+  height: "36px",
+  backgroundColor: createTheme.palette.common.marketlightgrey,
+  color: "#fff",
+  "&:hover": {
+    backgroundColor: createTheme.palette.common.marketgrey,
+  },
 }));
 
 const CardMediaItem = styled(CardMedia)(({ theme }) => ({
@@ -542,49 +571,41 @@ const Main = () => {
                             </ButtonReviewItem>
                             {quantity > 0 ? (
                               <CardActionsContainer>
-                                <NumericInput
-                                  min={0}
-                                  value={quantity}
-                                  onChange={(value) =>
-                                    handleQuantityChange(product, value)
-                                  }
-                                  style={{
-                                    wrap: {
-                                      width: "64px",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      marginTop: createTheme.spacing(2),
-                                      marginBottom: createTheme.spacing(2),
-                                    },
-                                    input: {
-                                      width: "100%",
-                                      height: "36px",
-                                      border: "1px solid #ccc",
-                                      borderRadius: "4px",
-                                      textAlign: "center",
-                                    },
-                                    "input:focus": {
-                                      borderColor:
-                                        createTheme.palette.common.marketlightgrey,
-                                    },
-                                    btnUp: {
-                                      width: "20px",
-                                      height: "16px",
-                                      lineHeight: "16px",
-                                      backgroundColor:
-                                        createTheme.palette.common.marketlightgrey,
-                                      color: "#fff",
-                                    },
-                                    btnDown: {
-                                      width: "20px",
-                                      height: "16px",
-                                      lineHeight: "16px",
-                                      backgroundColor:
-                                        createTheme.palette.common.marketlightgrey,
-                                      color: "#fff",
-                                    },
-                                  }}
-                                />
+                                <NumericInputContainer>
+                                  <NumericButton
+                                    onClick={() =>
+                                      handleQuantityChange(
+                                        product,
+                                        quantity - 1
+                                      )
+                                    }
+                                  >
+                                    <ArrowDropDownIcon fontSize="small" />
+                                  </NumericButton>
+                                  <TheTextField
+                                    type="number"
+                                    value={quantity}
+                                    onChange={(e) =>
+                                      handleQuantityChange(
+                                        product,
+                                        e.target.value
+                                      )
+                                    }
+                                    inputProps={{ min: 0 }}
+                                    variant="outlined"
+                                    size="small"
+                                  />
+                                  <NumericButton
+                                    onClick={() =>
+                                      handleQuantityChange(
+                                        product,
+                                        quantity + 1
+                                      )
+                                    }
+                                  >
+                                    <ArrowDropUpIcon fontSize="small" />
+                                  </NumericButton>
+                                </NumericInputContainer>
                               </CardActionsContainer>
                             ) : (
                               <ButtonAddItem
