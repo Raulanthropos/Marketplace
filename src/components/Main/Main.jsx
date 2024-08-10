@@ -15,7 +15,13 @@ import {
 import { Modal } from "@mui/material";
 import useCartStore from "../../store/Cart";
 import createTheme from "../../theme";
-import { ShoppingCart, Details, Reviews } from "@mui/icons-material";
+import {
+  ShoppingCart,
+  Details,
+  Reviews,
+  Delete,
+  Edit,
+} from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -330,6 +336,7 @@ const Main = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth <= xsBreakpoint
   );
+  const userName = JSON.parse(localStorage.getItem("user"))?.name;
 
   // Debounce function to limit updates
   function debounce(func, wait) {
@@ -395,6 +402,25 @@ const Main = () => {
     }
   };
 
+  const handleDeleteReview = (reviewId) => {
+    const updatedReviews = productData.reviews.filter(
+      (review) => review._id !== reviewId
+    );
+    setProductData({ ...productData, reviews: updatedReviews });
+  };
+
+  const handleEditReview = (reviewId) => {
+    const updatedReviews = productData.reviews.map((review) => {
+      if (review._id === reviewId) {
+        console.log("This the review", review)
+        openReviewModal(review);
+        // return { ...review, isEditing: true };
+      }
+      return review;
+    });
+    setProductData({ ...productData, reviews: updatedReviews });
+  };
+
   useEffect(() => {
     const fetchProducts = async (page = 1) => {
       try {
@@ -403,7 +429,7 @@ const Main = () => {
         const response = await fetch(`${baseUrl}/products${queryString}`);
         const data = await response.json();
         setProductsData(data.products);
-        setTotalPages(data.totalPages); // Assuming your API returns total pages
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error(error);
       } finally {
@@ -730,6 +756,26 @@ const Main = () => {
                     <b style={{ marginRight: "0.5rem" }}>Comment: </b>
                     {review.comment}
                   </ReviewTypographyItem>
+                  {userName && userName === review.username && (
+                    <div>
+                      <IconButton
+                        style={{
+                          color: createTheme.palette.common.marketwarning,
+                        }}
+                        onClick={() => handleEditReview(review._id)}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        style={{
+                          color: createTheme.palette.common.marketred,
+                        }}
+                        onClick={() => handleDeleteReview(review._id)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </div>
+                  )}
                   <Divider style={{ width: "100%", margin: "1rem 0" }} />
                 </Grid>
               );
