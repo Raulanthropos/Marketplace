@@ -337,6 +337,7 @@ const Main = () => {
     window.innerWidth <= xsBreakpoint
   );
   const userName = JSON.parse(localStorage.getItem("user"))?.name;
+  const [reviewId, setReviewId] = useState(null);
 
   // Debounce function to limit updates
   function debounce(func, wait) {
@@ -402,23 +403,101 @@ const Main = () => {
     }
   };
 
-  const handleDeleteReview = (reviewId) => {
-    const updatedReviews = productData.reviews.filter(
-      (review) => review._id !== reviewId
-    );
-    setProductData({ ...productData, reviews: updatedReviews });
+  const handleDeleteReview = async (reviewId) => {
+    const token = localStorage.getItem("accessToken");
+    try {
+      const response = await fetch(
+        `${baseUrl}/products/${productData._id}/reviews/${reviewId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete review");
+      }
+
+      // Update the reviews in the state after successful deletion
+      const updatedReviews = productData.reviews.filter(
+        (review) => review._id !== reviewId
+      );
+      setProductData({ ...productData, reviews: updatedReviews });
+
+      // Optional: Show a success message
+      setSnackbarMessage("Review deleted successfully!");
+      setSnackbarType("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error:", error);
+      setSnackbarMessage("Failed to delete the review.");
+      setSnackbarType("error");
+      setSnackbarOpen(true);
+    }
   };
 
-  const handleEditReview = (reviewId) => {
-    const updatedReviews = productData.reviews.map((review) => {
-      if (review._id === reviewId) {
-        console.log("This the review", review)
-        openReviewModal(review);
-        // return { ...review, isEditing: true };
+  const loadReviewForEditing = (product, review) => {
+    setProductData(product);
+    setComment(review.comment);
+    setRate(review.rate);
+    setReviewId(review._id);
+    setOpen(true);
+  };
+
+  //   if (reviewToEdit) {
+  //     // Set the comment and rate states to the current review's values
+  //     setComment(reviewToEdit.comment);
+  //     setRate(reviewToEdit.rate);
+
+  //     // Open the modal for editing
+  //     setOpen(true);
+  //   }
+  // };
+
+  const handleEditReview = async (productId, reviewId) => {
+    const token = localStorage.getItem("accessToken");
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/products/${productId}/reviews/${reviewId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            comment,
+            rate,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const updatedReview = await response.json();
+        // Update the review in the state to avoid duplicates
+        const updatedReviews = productData.reviews.map((review) =>
+          review._id === reviewId ? updatedReview : review
+        );
+        setProductData({ ...productData, reviews: updatedReviews });
+
+        // Show success message
+        setSnackbarMessage("Review updated successfully!");
+        setSnackbarType("success");
+        setSnackbarOpen(true);
+        setIsLoading(false);
+        setOpen(false);
+      } else {
+        throw new Error("Failed to update review");
       }
-      return review;
-    });
-    setProductData({ ...productData, reviews: updatedReviews });
+    } catch (error) {
+      console.error("Error updating review:", error);
+      setSnackbarMessage("Error updating review");
+      setSnackbarType("error");
+      setSnackbarOpen(true);
+    }
   };
 
   useEffect(() => {
@@ -483,7 +562,7 @@ const Main = () => {
       console.error("No token found");
       return;
     }
-
+  
     try {
       const response = await fetch(
         `${baseUrl}/products/${product._id}/reviews`,
@@ -499,34 +578,51 @@ const Main = () => {
           }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       console.log("Review data", data);
+  
+      // Update the reviews with the new review
+      setProductData((prevProductData) => ({
+        ...prevProductData,
+        reviews: [...prevProductData.reviews, data],
+      }));
+  
       setSnackbarMessage("Review was posted successfully!");
       setSnackbarType("success");
       setSnackbarOpen(true);
+  
       setTimeout(() => {
         setOpen(false);
-        setIsLoading(false);
-        return data;
       }, 1500);
+  
     } catch (error) {
       setSnackbarMessage("Error posting review!");
       setSnackbarType("error");
       setSnackbarOpen(true);
       console.error("Error posting review:", error);
-      // Handle error as needed
+    } finally {
+      setIsLoading(false); // Make sure loading state is reset even in case of error
     }
   };
+  
 
-  const handleReview = (e) => {
+  const handleReviewSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    postReview(productData);
+
+    // Assuming you store the review ID when a user is editing a review
+    if (reviewId) {
+      // Edit existing review
+      handleEditReview(productData._id, reviewId);
+    } else {
+      // Post a new review
+      postReview(productData);
+    }
   };
 
   const openReviewModal = (product) => {
@@ -762,7 +858,9 @@ const Main = () => {
                         style={{
                           color: createTheme.palette.common.marketwarning,
                         }}
-                        onClick={() => handleEditReview(review._id)}
+                        onClick={() =>
+                          loadReviewForEditing(productData, review)
+                        }
                       >
                         <Edit />
                       </IconButton>
@@ -848,7 +946,7 @@ const Main = () => {
               );
             })}
           </Grid>
-          <ButtonAddItem type="submit" onClick={handleReview}>
+          <ButtonAddItem type="submit" onClick={handleReviewSubmit}>
             {isLoading ? <CircularProgress color="inherit" /> : "Submit"}
           </ButtonAddItem>
           <Snackbar
