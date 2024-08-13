@@ -33,7 +33,6 @@ export const login = (email, password) => async (dispatch) => {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log("This is data", data)
             dispatch(setAccessToken(data.accessToken));
             dispatch(setIsLoggedIn(true));
             dispatch(setUser(data.user));
@@ -84,10 +83,14 @@ export const logout = () => async (dispatch) => {
         });
         if (response.ok) {
             dispatch(setIsLoggedIn(false));
-            localStorage.setItem('accessToken', null);
-            localStorage.setItem('user', JSON.stringify(null));
-            const resetCart = useCartStore.getState().resetCart;
-            resetCart();
+            dispatch(setUser(null));
+            dispatch(setAccessToken(null));
+
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            useCartStore.getState().resetCart();
+
+            return true;
         } else {
             throw new Error("Network response was not ok");
         }

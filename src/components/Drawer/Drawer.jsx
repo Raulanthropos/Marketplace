@@ -10,7 +10,6 @@ import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useCartStore from "../../store/Cart";
 import { ShoppingCartOutlined } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
@@ -70,6 +69,15 @@ const ListItemButtonStyle = styled(ListItemButton)(({ theme }) => ({
 const ListItemTextStyle = styled(ListItemText)(({ theme }) => ({
   textDecoration: "none",
   color: "inherit",
+}));
+
+const ListItemNameStyle = styled(ListItemText)(({ theme }) => ({
+  textDecoration: "none",
+  color: createTheme.palette.common.marketred,
+  ":hover": {
+    color: createTheme.palette.common.marketmoss,
+    cursor: "default",
+  },
 }));
 
 const DrawerContainerStyle = styled(Box)(({ theme }) => ({
@@ -133,27 +141,25 @@ export default function TemporaryDrawer() {
   };
 
   const handleLogout = async () => {
-    dispatch(logout())
-      .then(() => {
-        localStorage.setItem("cart", []);
+    try {
+      const success = await dispatch(logout());
+      if (success) {
         setSnackbarMessage("User logged out successfully!");
         setSnackbarType("success");
         setSnackbarOpen(true);
         setTimeout(() => {
-          navigate("/");
+          navigate("/"); // Redirect after a delay to allow state update
         }, 1000);
-      })
-      .catch((error) => {
-        console.error(
-          "There has been a problem with your fetch operation:",
-          error
-        );
-        setSnackbarMessage(
-          "Login failed. Please check your email and password."
-        );
-        setSnackbarType("error");
-        setSnackbarOpen(true);
-      });
+      }
+    } catch (error) {
+      console.error(
+        "There has been a problem with your fetch operation:",
+        error
+      );
+      setSnackbarMessage("Logout failed. Please try again.");
+      setSnackbarType("error");
+      setSnackbarOpen(true);
+    }
   };
 
   const list = (
@@ -165,38 +171,36 @@ export default function TemporaryDrawer() {
         sx={{ width: screenWidth <= 600 ? dynamicWidth : drawerWidth }}
       >
         <Divider />
-          <List>
-            <ListItem key={userName} disablePadding>
-              <TypographyItem variant="h6">
-                Categories
-              </TypographyItem>
-            </ListItem>
-            <ListItem key="Clothing" disablePadding>
-              <ListItemButtonStyle>
-                  <ListItemTextStyle primary="Clothing" />
-              </ListItemButtonStyle>
-            </ListItem>
-            <ListItem key="Electronics" disablePadding>
-              <ListItemButtonStyle>
-                  <ListItemTextStyle primary="Electronics" />
-              </ListItemButtonStyle>
-            </ListItem>
-            <ListItem key="Toys" disablePadding>
+        <List>
+          <ListItem key={userName + Math.random()} disablePadding>
+            <TypographyItem variant="h6">Categories</TypographyItem>
+          </ListItem>
+          <ListItem key="Clothing" disablePadding>
             <ListItemButtonStyle>
-                <ListItemTextStyle primary="Toys" />
-              </ListItemButtonStyle>
-            </ListItem>
-            <ListItem key="Household Items" disablePadding>
+              <ListItemTextStyle primary="Clothing" />
+            </ListItemButtonStyle>
+          </ListItem>
+          <ListItem key="Electronics" disablePadding>
             <ListItemButtonStyle>
-                <ListItemTextStyle primary="Household Items" />
-              </ListItemButtonStyle>
-            </ListItem>
-            <ListItem key="Gadgets" disablePadding>
+              <ListItemTextStyle primary="Electronics" />
+            </ListItemButtonStyle>
+          </ListItem>
+          <ListItem key="Toys" disablePadding>
             <ListItemButtonStyle>
-                <ListItemTextStyle primary="Gadgets" />
-              </ListItemButtonStyle>
-            </ListItem>
-          </List>
+              <ListItemTextStyle primary="Toys" />
+            </ListItemButtonStyle>
+          </ListItem>
+          <ListItem key="Household Items" disablePadding>
+            <ListItemButtonStyle>
+              <ListItemTextStyle primary="Household Items" />
+            </ListItemButtonStyle>
+          </ListItem>
+          <ListItem key="Gadgets" disablePadding>
+            <ListItemButtonStyle>
+              <ListItemTextStyle primary="Gadgets" />
+            </ListItemButtonStyle>
+          </ListItem>
+        </List>
       </DrawerContainerStyle>
     </>
   );
@@ -205,7 +209,7 @@ export default function TemporaryDrawer() {
     <>
       <div style={{ height: "72px" }}></div>
       <MainContainer>
-      {/* {console.log(screenWidth)} 
+        {/* {console.log(screenWidth)} 
               <Button onClick={toggleDrawer(true)}>
           <MenuRoundedIcon />
         </Button>
@@ -229,22 +233,16 @@ export default function TemporaryDrawer() {
           {isLoggedIn ? (
             <>
               <ListStyle>
-                {/* <ListItem key={userName} disablePadding>
-                <TypographyItem variant="h6">
-                  Welcome back, {userName}!
-                </TypographyItem>
-              </ListItem> */}
+                <ListItem disablePadding>
+                  <ListItemTextStyle primary="Welcome, " />
+                </ListItem>
+                <ListItem key={userName + Math.random()}>
+                  <ListItemNameStyle primary={`${" " + userName}`} />
+                </ListItem>
                 <ListItem key="Main" disablePadding>
                   <ListItemButtonStyle>
                     <LinkItem to="/">
                       <ListItemTextStyle primary="Main" />
-                    </LinkItem>
-                  </ListItemButtonStyle>
-                </ListItem>
-                <ListItem key="Cart" disablePadding>
-                  <ListItemButtonStyle>
-                    <LinkItem to="/cart">
-                      <ListItemTextStyle primary="Cart" />
                     </LinkItem>
                   </ListItemButtonStyle>
                 </ListItem>
