@@ -68,6 +68,7 @@ const ListItemButtonStyle = styled(ListItemButton)(({ theme }) => ({
 
 const ListItemTextStyle = styled(ListItemText)(({ theme }) => ({
   textDecoration: "none",
+  textAlign: "center",
   color: "inherit",
 }));
 
@@ -264,6 +265,13 @@ export default function TemporaryDrawer() {
             </>
           ) : (
             <ListStyle>
+              <ListItem key="Main" disablePadding>
+                <ListItemButtonStyle>
+                  <LinkItem to="/">
+                    <ListItemTextStyle primary="Main" />
+                  </LinkItem>
+                </ListItemButtonStyle>
+              </ListItem>
               <ListItem key="Register" disablePadding>
                 <ListItemButtonStyle>
                   <LinkItem to="/register">
