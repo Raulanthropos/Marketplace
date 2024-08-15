@@ -12,11 +12,12 @@ This is the frontend of a mock e-shop application built using React, Redux, Zust
 ## Features
 
 - **Responsive Design**: Fully responsive UI for optimal viewing across different devices.
-- **Product Categories**: Products categorized into clothing and electronics.
+- **Product Categories**: Products categorized into 5 categories.
 - **Product Details**: View detailed information about each product in a modal.
 - **User Authentication**: Registration and login functionalities with JWT-based authentication.
 - **Drawer Navigation**: Navigation drawer for easy access to different sections.
 - **Reviews and Cart**: Logged-in users can add reviews and manage their shopping cart.
+- **CRUD Operations in Reviews**" Users can also edit or delete the reviews they posted.
 - **LocalStorage Integration**: Auth and cart data stored in localStorage.
 
 Live demo of the application at [Marketplace](https://marketplace-omega-tawny.vercel.app)
@@ -62,6 +63,6 @@ The application will be available at `http://localhost:3000`.
 
 1. Register a new user or log in with existing credentials.
 2. Browse products by category.
-3. View product details and add reviews (if logged in).
+3. View product details and add/edit/delete reviews (if logged in).
 4. Add products to the cart and manage the cart.
 
