@@ -4,6 +4,7 @@ import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
 import useCartStore from "../../store/Cart";
 import { useNavigate } from "react-router-dom";
 import createTheme from "../../theme";
+import ModalWindow from "../../hooks/ModalWindow";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary,
@@ -77,6 +78,16 @@ const ButtonClear = styled(Button)(() => ({
 const Cart = () => {
   const navigate = useNavigate();
   const { cart, resetCart } = useCartStore();
+  const [showClearCartModal, setShowClearCartModal] = React.useState(false);
+
+  const handleClearCartRequest = () => {
+    setShowClearCartModal(true);
+  };
+
+  const handleClearCartConfirm = () => {
+    resetCart();
+    setShowClearCartModal(false);
+  };
   return (
     <MainContainer>
       <Title>Cart</Title>
@@ -121,7 +132,7 @@ const Cart = () => {
         Back to Main
       </ButtonBack>
       {cart.length > 0 ? (
-        <ButtonClear variant="contained" onClick={resetCart}>
+        <ButtonClear variant="contained" onClick={handleClearCartRequest}>
           Clear Cart
         </ButtonClear>
       ) : (
@@ -129,6 +140,11 @@ const Cart = () => {
           The cart is empty!
         </TypographyItem>
       )}
+      <ModalWindow
+        isOpen={showClearCartModal}
+        onClose={() => setShowClearCartModal(false)}
+        onConfirm={handleClearCartConfirm}
+      />
     </MainContainer>
   );
 };
