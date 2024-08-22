@@ -42,17 +42,6 @@ const ModalButtonContainer = styled(Grid)(({ theme }) => ({
   gap: "1rem",
 }));
 
-// const ModalButton = styled(Button)(() => ({
-//   marginTop: createTheme.spacing(2),
-//   marginBottom: createTheme.spacing(2),
-//   backgroundColor: createTheme.palette.common.marketred,
-//   color: createTheme.palette.common.marketwhite,
-//   "&:hover": {
-//     color: createTheme.palette.common.marketwhite,
-//     backgroundColor: createTheme.palette.common.marketblue,
-//   },
-// }));
-
 const ModalButton = styled(Button)(() => ({
   marginTop: createTheme.spacing(2),
   marginBottom: createTheme.spacing(2),
