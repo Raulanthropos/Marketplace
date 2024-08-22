@@ -80,7 +80,7 @@ const Cart = () => {
   const { cart, resetCart } = useCartStore();
   const [showClearCartModal, setShowClearCartModal] = React.useState(false);
 
-  const handleClearCartRequest = () => {
+  const openModal = () => {
     setShowClearCartModal(true);
   };
 
@@ -132,19 +132,21 @@ const Cart = () => {
         Back to Main
       </ButtonBack>
       {cart.length > 0 ? (
-        <ButtonClear variant="contained" onClick={handleClearCartRequest}>
+        <>
+        <ButtonClear variant="contained" onClick={openModal}>
           Clear Cart
         </ButtonClear>
+          <ModalWindow
+            isOpen={showClearCartModal}
+            onClose={() => setShowClearCartModal(false)}
+            onConfirm={handleClearCartConfirm}
+          />
+        </>
       ) : (
         <TypographyItem color="textSecondary">
           The cart is empty!
         </TypographyItem>
       )}
-      <ModalWindow
-        isOpen={showClearCartModal}
-        onClose={() => setShowClearCartModal(false)}
-        onConfirm={handleClearCartConfirm}
-      />
     </MainContainer>
   );
 };
