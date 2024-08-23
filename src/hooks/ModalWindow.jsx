@@ -57,12 +57,12 @@ const ModalWindow = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
   return (
-    <MainContainer className="modal-overlay">
-      <ModalContent className="modal-content">
-        <ModalTitle className="modal-title">
-          Are you sure you want to clear the cart?
+    <MainContainer>
+      <ModalContent>
+        <ModalTitle>
+          Are you sure you want to remove all items from your cart?
         </ModalTitle>
-        <ModalButtonContainer className="modal-button-container">
+        <ModalButtonContainer>
           <ModalButton onClick={onConfirm}>Yes</ModalButton>
           <ModalButton onClick={onClose}>Cancel</ModalButton>
         </ModalButtonContainer>
