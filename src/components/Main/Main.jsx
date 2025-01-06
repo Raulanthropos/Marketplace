@@ -741,11 +741,13 @@ const Main = () => {
                           </>
                         ) : (
                           <>
+                          <Tippy content="View details">
                             <ButtonReviewItem
                               onClick={() => fetchProduct(product)}
-                            >
+                              >
                               <Details />
                             </ButtonReviewItem>
+                              </Tippy>
                             <>
                               <Tippy content="Login to review">
                                 <div>
